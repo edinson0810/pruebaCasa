@@ -205,3 +205,234 @@ p a:hover {
     box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
     outline: none;
 }
+
+/* Añade esto al final de tu frontend/src/main.css existente */
+
+.dashboard-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 900px; /* Ajustado para más espacio */
+    text-align: center;
+}
+
+.dashboard-container h1 {
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 2.2em;
+}
+
+.dashboard-container p {
+    color: #666;
+    font-size: 1.1em;
+    margin-bottom: 20px;
+}
+
+.dashboard-sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Columnas responsivas */
+    gap: 20px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h3 {
+    color: #007bff;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+.card p {
+    font-size: 0.95em;
+    color: #777;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.mt-4 {
+    margin-top: 20px;
+}
+
+
+
+/* Añade esto al final de tu frontend/src/main.css existente */
+
+.gestion-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 1000px; /* Más ancho para la tabla */
+    text-align: center;
+    margin: 20px auto; /* Centrar y añadir margen */
+}
+
+.crud-form {
+    background-color: #f9f9f9;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border: 1px solid #eee;
+    text-align: left;
+}
+
+.crud-form h3 {
+    margin-top: 0;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.crud-form .form-group label {
+    font-weight: bold;
+    color: #555;
+}
+
+.crud-form .form-group input[type="text"],
+.crud-form .form-group input[type="email"],
+.crud-form .form-group input[type="tel"],
+.crud-form .form-group input[type="date"],
+.crud-form .form-group input[type="number"],
+.crud-form .form-group select {
+    width: calc(100% - 22px); /* Ajuste para padding/border */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    font-size: 1em;
+}
+
+.crud-form button {
+    width: auto;
+    padding: 10px 20px;
+    margin-right: 10px; /* Espacio entre botones */
+}
+
+.table-responsive {
+    overflow-x: auto; /* Para tablas que se desbordan en pantallas pequeñas */
+    margin-top: 20px;
+}
+
+.crud-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.crud-table th, .crud-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+    font-size: 0.9em;
+}
+
+.crud-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #333;
+}
+
+.crud-table tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+.crud-table .btn-edit, .crud-table .btn-delete {
+    padding: 6px 10px;
+    font-size: 0.85em;
+    margin-right: 5px;
+    border-radius: 4px;
+}
+
+.crud-table .btn-edit {
+    background-color: #ffc107; /* Amarillo para editar */
+    color: #333;
+    border: 1px solid #ffc107;
+}
+
+.crud-table .btn-edit:hover {
+    background-color: #e0a800;
+}
+
+.crud-table .btn-delete {
+    background-color: #dc3545; /* Rojo para eliminar */
+    color: white;
+    border: 1px solid #dc3545;
+}
+
+.crud-table .btn-delete:hover {
+    background-color: #c82333;
+}
+
+.btn-back {
+    background-color: #007bff; /* Azul para volver */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-size: 1em;
+}
+
+.btn-back:hover {
+    background-color: #0056b3;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0));
+    margin: 40px 0;
+}

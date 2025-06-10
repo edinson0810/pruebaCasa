@@ -1,99 +1,107 @@
+/// frontend/src/pages/DashboardPage.js
+
 // frontend/src/pages/DashboardPage.js
 
-export function DashboardPage(containerElement) {
-    const userName = localStorage.getItem('userName') || 'usuario';
-    const userRole = localStorage.getItem('userRole');
+const DASHBOARD_HTML_PATH = '/src/views/dashboard/index.html';
 
-    const parsedUserRole = parseInt(userRole, 10);
+export async function DashboardPage(containerElement) {
+    const token = localStorage.getItem('token');
 
-    containerElement.innerHTML = `
-        <div class="dashboard-container">
-            <h2>Bienvenido al Dashboard</h2>
-            <p>Has iniciado sesión exitosamente como <span id="dashboardUserName">${userName}</span>.</p>
-
-            <div class="dashboard-buttons">
-                <button id="gestionEmpleadosBtn" class="dashboard-btn">Gestión de Empleados</button>
-                <button id="gestionMenuBtn" class="dashboard-btn">Gestión de Menú</button>
-                <button id="gestionPedidosBtn" class="dashboard-btn">Gestión de Pedidos</button>
-                <button id="estadosPedidosBtn" class="dashboard-btn">Estados de Pedidos</button> <button id="gestionCocinaBtn" class="dashboard-btn">Gestión de Cocina</button>
-                <button id="procesamientoPagosBtn" class="dashboard-btn">Procesamiento de Pagos</button>
-                <button id="reportesBtn" class="dashboard-btn">Reportes</button>
-            </div>
-
-            <button id="logoutButton">Cerrar Sesión</button>
-            <p>Aquí irá el contenido específico para cada rol más adelante.</p>
-        </div>
-    `;
-
-    const logoutButton = containerElement.querySelector('#logoutButton');
-    const dashboardUserNameElement = containerElement.querySelector('#dashboardUserName');
-
-    // Referencias a todos los botones
-    const gestionEmpleadosBtn = containerElement.querySelector('#gestionEmpleadosBtn');
-    const gestionMenuBtn = containerElement.querySelector('#gestionMenuBtn');
-    const gestionPedidosBtn = containerElement.querySelector('#gestionPedidosBtn');
-    const estadosPedidosBtn = containerElement.querySelector('#estadosPedidosBtn'); // ¡Nueva referencia!
-    const gestionCocinaBtn = containerElement.querySelector('#gestionCocinaBtn');
-    const procesamientoPagosBtn = containerElement.querySelector('#procesamientoPagosBtn');
-    const reportesBtn = containerElement.querySelector('#reportesBtn');
-
-    dashboardUserNameElement.textContent = userName;
-
-    // --- Lógica para mostrar/ocultar botones según el rol ---
-    const ROL_ADMIN = 1;
-    const ROL_MESERO = 2;
-    const ROL_COCINERO = 3;
-    const ROL_CLIENTE = 4;
-
-    // Ocultar todos los botones por defecto
-    gestionEmpleadosBtn.style.display = 'none';
-    gestionMenuBtn.style.display = 'none';
-    gestionPedidosBtn.style.display = 'none';
-    estadosPedidosBtn.style.display = 'none'; // Por defecto oculto
-    gestionCocinaBtn.style.display = 'none';
-    procesamientoPagosBtn.style.display = 'none';
-    reportesBtn.style.display = 'none';
-
-    // Lógica de visibilidad según el rol
-    if (parsedUserRole === ROL_ADMIN) {
-        // Administrador ve todo
-        gestionEmpleadosBtn.style.display = 'block';
-        gestionMenuBtn.style.display = 'block';
-        gestionPedidosBtn.style.display = 'block';
-        estadosPedidosBtn.style.display = 'block';
-        gestionCocinaBtn.style.display = 'block';
-        procesamientoPagosBtn.style.display = 'block';
-        reportesBtn.style.display = 'block';
-    } else if (parsedUserRole === ROL_MESERO) {
-        // Mesero: gestión de pedidos, estados de pedidos y procesamiento de pagos
-        gestionPedidosBtn.style.display = 'block';
-        estadosPedidosBtn.style.display = 'block';
-        procesamientoPagosBtn.style.display = 'block';
-    } else if (parsedUserRole === ROL_COCINERO) {
-        // Cocinero: gestión de cocina, estados de pedidos y ver el menú
-        gestionCocinaBtn.style.display = 'block';
-        estadosPedidosBtn.style.display = 'block'; // Para ver los pedidos que debe preparar
-        } else if (parsedUserRole === ROL_CLIENTE) {
-        // Cliente: podría ver el estado de sus propios pedidos
-        estadosPedidosBtn.style.display = 'block';
-        // Podrías añadir un botón para "Hacer Pedido" aquí si el cliente puede iniciar pedidos
+    if (!token) {
+        console.warn('No hay token de autenticación. Redirigiendo a /login.');
+        window.router.navigate('/login');
+        return;
     }
 
-    // --- Añadir event listeners a los botones ---
-    gestionEmpleadosBtn.addEventListener('click', () => { window.router.navigate('/gestion-empleados/registrar'); /* window.router.navigate('/gestion-empleados'); */ });
-    gestionMenuBtn.addEventListener('click', () => { console.log('Clic en Gestión de Menú'); /* window.router.navigate('/gestion-menu'); */ });
-    gestionPedidosBtn.addEventListener('click', () => { console.log('Clic en Gestión de Pedidos'); /* window.router.navigate('/gestion-pedidos'); */ });
-    estadosPedidosBtn.addEventListener('click', () => { console.log('Clic en Estados de Pedidos'); /* window.router.navigate('/estados-pedidos'); */ }); // ¡Nuevo Event Listener!
-    gestionCocinaBtn.addEventListener('click', () => { console.log('Clic en Gestión de Cocina'); /* window.router.navigate('/gestion-cocina'); */ });
-    procesamientoPagosBtn.addEventListener('click', () => { console.log('Clic en Procesamiento de Pagos'); /* window.router.navigate('/procesamiento-pagos'); */ });
-    reportesBtn.addEventListener('click', () => { console.log('Clic en Reportes'); /* window.router.navigate('/reportes'); */ });
+    try {
+        const response = await fetch(DASHBOARD_HTML_PATH);
+        if (!response.ok) {
+            throw new Error(`No se pudo cargar la plantilla HTML del dashboard: ${response.statusText} (${response.status})`);
+        }
+        const htmlContent = await response.text();
+        containerElement.innerHTML = htmlContent;
 
-    // Event listener para cerrar sesión
-    logoutButton.addEventListener('click', () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('userName');
-        localStorage.removeItem('userRole');
-        window.router.navigate('/login');
-    });
+        const userNameElement = containerElement.querySelector('#userName');
+        const userRoleElement = containerElement.querySelector('#userRole');
+        const logoutButton = containerElement.querySelector('#logoutButton');
+
+        // Selectores para todos los botones
+        const gestionEmpleadosLink = containerElement.querySelector('#gestionEmpleadosLink');
+        const gestionMenuLink = containerElement.querySelector('#gestionMenuLink');
+        const gestionPedidosLink = containerElement.querySelector('#gestionPedidosLink');
+        const estadoPedidosLink = containerElement.querySelector('#estadoPedidosLink');
+        const gestionCocinaLink = containerElement.querySelector('#gestionCocinaLink');
+        const procesamientoPagosLink = containerElement.querySelector('#procesamientoPagosLink');
+        const reportesLink = containerElement.querySelector('#reportesLink');
+
+        const userName = localStorage.getItem('userName') || 'Usuario';
+        const userRole = localStorage.getItem('userRole') || 'desconocido';
+
+        if (userNameElement) userNameElement.textContent = userName;
+        if (userRoleElement) userRoleElement.textContent = userRole;
+
+        if (logoutButton) {
+            logoutButton.addEventListener('click', () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('refreshToken');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userRole');
+                window.router.navigate('/login');
+            });
+        }
+
+        // Lógica de navegación para cada botón
+        if (gestionEmpleadosLink) {
+            gestionEmpleadosLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                window.router.navigate('/gestion-empleados');
+            });
+        }
+
+        if (gestionMenuLink) {
+            gestionMenuLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                window.router.navigate('/gestion-menu'); // Nueva ruta
+            });
+        }
+
+        if (gestionPedidosLink) {
+            gestionPedidosLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                window.router.navigate('/gestion-pedidos'); // Nueva ruta
+            });
+        }
+
+        if (estadoPedidosLink) {
+            estadoPedidosLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                window.router.navigate('/estado-pedidos'); // Nueva ruta
+            });
+        }
+
+        if (gestionCocinaLink) {
+            gestionCocinaLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                window.router.navigate('/gestion-cocina'); // Nueva ruta
+            });
+        }
+
+        if (procesamientoPagosLink) {
+            procesamientoPagosLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                window.router.navigate('/procesamiento-pagos'); // Nueva ruta
+            });
+        }
+
+        if (reportesLink) {
+            reportesLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                window.router.navigate('/reportes'); // Nueva ruta
+            });
+        }
+
+    } catch (error) {
+        console.error('Error al cargar o renderizar DashboardPage:', error);
+        containerElement.innerHTML = `<p class="error-message">Error al cargar la página del Dashboard: ${error.message}</p>`;
+    }
 }
