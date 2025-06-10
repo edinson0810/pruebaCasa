@@ -6,24 +6,98 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const registrarUsuario = async (req, res) => {
-   const { nombre, email, password, rol_id } = req.body;
+  const { nombre, email, password, rol_id } = req.body;
 
   if (!nombre || !email || !password || !rol_id) {
     return res.status(400).json({ message: 'Todos los campos son obligatorios' });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  db.query(
-    'INSERT INTO usuarios (nombre, email, password, rol_id) VALUES (?, ?, ?, ?)',
-    [nombre, email, hashedPassword, rol_id],
-    (err, result) => {
-      if (err) return res.status(500).json({ message: 'Error al registrar usuario', error: err });
+    db.query(
+      'INSERT INTO usuarios (nombre, email, password, rol_id) VALUES (?, ?, ?, ?)',
+      [nombre, email, hashedPassword, rol_id],
+      (err) => {
+        if (err) {
+          if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({ message: 'El email ya está registrado' });
+          }
+          return res.status(500).json({ message: 'Error al registrar usuario', error: err });
+        }
 
-      res.status(201).json({ message: 'Usuario registrado correctamente' });
-    }
-  );
+        res.status(201).json({ message: 'Usuario registrado correctamente' });
+      }
+    );
+  } catch (error) {
+    res.status(500).json({ message: 'Error en el servidor', error });
+  }
 };
+
+// ✅ Leer todos los usuarios
+export const listarUsuarios = (req, res) => {
+  db.query('SELECT id, nombre, email, rol_id FROM usuarios', (err, results) => {
+    if (err) return res.status(500).json({ message: 'Error al obtener usuarios', error: err });
+
+    res.status(200).json(results);
+  });
+};
+
+// ✅ Leer un usuario por ID
+export const obtenerUsuario = (req, res) => {
+  const { id } = req.params;
+
+  db.query('SELECT id, nombre, email, rol_id FROM usuarios WHERE id = ?', [id], (err, results) => {
+    if (err) return res.status(500).json({ message: 'Error al obtener usuario', error: err });
+    if (results.length === 0) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+    res.status(200).json(results[0]);
+  });
+};
+
+// ✅ Actualizar usuario
+export const actualizarUsuario = async (req, res) => {
+  const { id } = req.params;
+  const { nombre, email, password, rol_id } = req.body;
+
+  if (!nombre || !email || !rol_id) {
+    return res.status(400).json({ message: 'Nombre, email y rol son obligatorios' });
+  }
+
+  try {
+    let updateQuery = '';
+    let params = [];
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateQuery = 'UPDATE usuarios SET nombre = ?, email = ?, password = ?, rol_id = ? WHERE id = ?';
+      params = [nombre, email, hashedPassword, rol_id, id];
+    } else {
+      updateQuery = 'UPDATE usuarios SET nombre = ?, email = ?, rol_id = ? WHERE id = ?';
+      params = [nombre, email, rol_id, id];
+    }
+
+    db.query(updateQuery, params, (err) => {
+      if (err) return res.status(500).json({ message: 'Error al actualizar usuario', error: err });
+
+      res.status(200).json({ message: 'Usuario actualizado correctamente' });
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error en el servidor', error });
+  }
+};
+
+// ✅ Eliminar usuario
+export const eliminarUsuario = (req, res) => {
+  const { id } = req.params;
+
+  db.query('DELETE FROM usuarios WHERE id = ?', [id], (err) => {
+    if (err) return res.status(500).json({ message: 'Error al eliminar usuario', error: err });
+
+    res.status(200).json({ message: 'Usuario eliminado correctamente' });
+  });
+};
+
 
 export const loginUsuario = (req, res) => {
   const { email, password } = req.body;
