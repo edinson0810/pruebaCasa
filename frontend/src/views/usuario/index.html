@@ -1,10 +1,7 @@
 <div class="gestion-container">
-    <h2>Gestión de Usuarios</h2>
-
+    <h2>Agregar Nuevo Empleado</h2>
     <form id="userForm" class="crud-form">
-        <h3><span id="formTitle">Crear</span> Usuario</h3>
-        <input type="hidden" id="userId"> 
-
+        <p id="formMessage" class="message"></p>
         <div class="form-group">
             <label for="userName">Nombre:</label>
             <input type="text" id="userName" required>
@@ -15,7 +12,7 @@
         </div>
         <div class="form-group">
             <label for="userPassword">Contraseña:</label>
-            <input type="password" id="userPassword" placeholder="Solo si deseas cambiarla o crear un nuevo usuario">
+            <input type="password" id="userPassword" required placeholder="Mínimo 6 caracteres">
         </div>
         <div class="form-group">
             <label for="userRole">Rol:</label>
@@ -24,34 +21,9 @@
                 <option value="1">Administrador</option>
                 <option value="2">Mesero</option>
                 <option value="3">Cocinero</option>
-            </select>
+                </select>
         </div>
-
-        <button type="submit" id="submitBtn" class="btn btn-primary">Crear Usuario</button>
-        <button type="button" id="cancelBtn" class="btn btn-secondary" style="display:none;">Cancelar Edición</button>
-        <p id="formMessage" class="message"></p>
+        <button type="submit" id="submitBtn" class="btn btn-primary">Crear Nuevo Empleado</button>
     </form>
-
-    <hr>
-
-    <h3>Listado de Usuarios</h3>
-    <div class="table-responsive">
-        <table class="crud-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    <th>Rol</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="usersTableBody">
-                <tr><td colspan="5">Cargando usuarios...</td></tr>
-            </tbody>
-        </table>
-        <p id="listMessage" class="message"></p>
-    </div>
-
     <button class="btn btn-back mt-4" onclick="window.router.navigate('/dashboard')">Volver al Dashboard</button>
 </div>
