@@ -53,6 +53,8 @@ class Router {
     navigate(path) {
         window.location.hash = path; // Cambia el hash de la URL para navegar
     }
+
+    
 }
 
 export { Router }; // Exporta la clase Router

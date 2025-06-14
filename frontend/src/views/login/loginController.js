@@ -1,6 +1,4 @@
 // frontend/src/views/login/loginController.js
-
-// Rutas relativas para salir de views/login/ y llegar a src/services/ y src/helpers/
 import { loginUser } from '../../services/authService.js';
 import { displayMessage } from '../../helpers/domHelpers.js'; // Ajustado a 'helpers'
 
@@ -59,4 +57,14 @@ export function setupLoginPageLogic(containerElement) {
             window.router.navigate('/register');
         });
     }
+
+    // ✅ Enlazar el enlace de "¿Olvidaste tu contraseña?"
+    const forgotPasswordLink = containerElement.querySelector('#forgotPasswordLink');
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', (event) => {
+            event.preventDefault(); // Evita navegación completa
+            window.router.navigate('/recuperar'); // Redirige a la vista de recuperación
+        });
+    }
 }
+
