@@ -1,158 +1,141 @@
 // frontend/src/views/empleados/empleadosController.js
+export function setupEmpleadoController(containerElement) {
+  const token = localStorage.getItem('token');
+  const apiUrl = 'http://localhost:3000/api/auth';
 
-import {
-    getEmpleados,
-    createEmpleado,
-    updateEmpleado,
-    deleteEmpleado
-} from '../../services/empleadoService.js';
-import {
-    displayMessage
-} from '../../helpers/domHelpers.js';
+  const ROLES = {
+    1: 'Administrador',
+    2: 'Empleado',
+    3: 'Cocinero'
+  };
 
-let currentEditingEmpleadoId = null; // Para saber qué empleado estamos editando
+  const form = containerElement.querySelector('#empleadoForm');
+  const tableBody = containerElement.querySelector('#empleadosTable tbody');
 
-export async function setupEmpleadosPageLogic(containerElement) {
-    const empleadoForm = containerElement.querySelector('#empleadoForm');
-    const empleadosTableBody = containerElement.querySelector('#empleadosTableBody');
-    const formTitle = containerElement.querySelector('#formTitle');
-    const submitBtn = containerElement.querySelector('#submitBtn');
-    const cancelBtn = containerElement.querySelector('#cancelBtn');
-    const formMessage = containerElement.querySelector('#formMessage');
-    const listMessage = containerElement.querySelector('#listMessage');
+  const idField = containerElement.querySelector('#empleadoId');
+  const nombreField = containerElement.querySelector('#nombre');
+  const emailField = containerElement.querySelector('#email');
+  const passwordField = containerElement.querySelector('#password');
+  const rolField = containerElement.querySelector('#rol');
+  const resetBtn = containerElement.querySelector('#resetBtn');
 
-    // Referencias a los campos del formulario
-    const empleadoIdInput = containerElement.querySelector('#empleadoId');
-    const nombreInput = containerElement.querySelector('#nombre');
-    const apellidoInput = containerElement.querySelector('#apellido');
-    const emailInput = containerElement.querySelector('#email');
-    const telefonoInput = containerElement.querySelector('#telefono');
-    const fechaContratacionInput = containerElement.querySelector('#fechaContratacion');
-    const puestoInput = containerElement.querySelector('#puesto');
-    const salarioInput = containerElement.querySelector('#salario');
-    const estadoInput = containerElement.querySelector('#estado');
+  const volverBtn = containerElement.querySelector('#volverDashboardBtn');
+  volverBtn?.addEventListener('click', () => {
+    window.router.navigate('/dashboard');
+  });
 
-    // Función para cargar y mostrar empleados
-    async function loadEmpleados() {
-        displayMessage('listMessage', 'Cargando empleados...', false);
-        try {
-            const empleados = await getEmpleados();
-            empleadosTableBody.innerHTML = ''; // Limpiar tabla
-            if (empleados.length === 0) {
-                empleadosTableBody.innerHTML = '<tr><td colspan="7">No hay empleados registrados.</td></tr>';
-                displayMessage('listMessage', '', false);
-                return;
-            }
-            empleados.forEach(empleado => {
-                const row = empleadosTableBody.insertRow();
-                row.insertCell(0).textContent = empleado.id;
-                row.insertCell(1).textContent = empleado.nombre;
-                row.insertCell(2).textContent = empleado.apellido;
-                row.insertCell(3).textContent = empleado.email;
-                row.insertCell(4).textContent = empleado.puesto;
-                row.insertCell(5).textContent = empleado.estado; // Mostrar estado
+  // Mostrar empleados
+  async function cargarEmpleados() {
+    tableBody.innerHTML = '';
+    try {
+      const res = await fetch(apiUrl, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const empleados = await res.json();
 
-                const actionsCell = row.insertCell(6);
-                const editButton = document.createElement('button');
-                editButton.textContent = 'Editar';
-                editButton.classList.add('btn', 'btn-edit');
-                editButton.addEventListener('click', () => editEmpleado(empleado));
+      empleados.forEach(emp => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${emp.nombre}</td>
+          <td>${emp.email}</td>
+          <td>${ROLES[emp.rol_id] || 'Desconocido'}</td>
+          <td>
+            <button class="editar-btn" data-id="${emp.id}">Editar</button>
+            <button class="eliminar-btn" data-id="${emp.id}">Eliminar</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
 
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Eliminar';
-                deleteButton.classList.add('btn', 'btn-delete');
-                deleteButton.addEventListener('click', () => confirmDeleteEmpleado(empleado.id, empleado.nombre));
+    } catch (err) {
+      console.error('Error al cargar empleados:', err);
+    }
+  }
 
-                actionsCell.appendChild(editButton);
-                actionsCell.appendChild(deleteButton);
-            });
-            displayMessage('listMessage', '', false);
-        } catch (error) {
-            console.error('Error al cargar empleados:', error);
-            displayMessage('listMessage', 'Error al cargar empleados: ' + error.message, true);
+  // Crear o actualizar
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const empleado = {
+      nombre: nombreField.value,
+      email: emailField.value,
+      password: passwordField.value,
+      rol_id: parseInt(rolField.value)
+    };
+
+    const id = idField.value;
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `${apiUrl}/${id}` : apiUrl;
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(empleado)
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      alert(data.message || 'Empleado guardado');
+      form.reset();
+      idField.value = '';
+      await cargarEmpleados();
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  });
+
+  // Botón limpiar
+  resetBtn.addEventListener('click', () => {
+    form.reset();
+    idField.value = '';
+  });
+
+  // Delegar clic en Editar / Eliminar
+  tableBody.addEventListener('click', async (e) => {
+    const id = e.target.dataset.id;
+
+    if (e.target.classList.contains('editar-btn')) {
+      try {
+        const res = await fetch(`${apiUrl}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const empleados = await res.json();
+        const empleado = empleados.find(emp => emp.id == id);
+
+        if (empleado) {
+          idField.value = empleado.id;
+          nombreField.value = empleado.nombre;
+          emailField.value = empleado.email;
+          rolField.value = empleado.rol_id;
+          passwordField.value = '';
         }
+      } catch (err) {
+        alert('Error al cargar datos del empleado');
+      }
     }
 
-    // Función para rellenar el formulario para edición
-    function editEmpleado(empleado) {
-        currentEditingEmpleadoId = empleado.id;
-        empleadoIdInput.value = empleado.id;
-        nombreInput.value = empleado.nombre;
-        apellidoInput.value = empleado.apellido;
-        emailInput.value = empleado.email;
-        telefonoInput.value = empleado.telefono || ''; // Puede ser nulo
-        // Formatear la fecha a 'YYYY-MM-DD' para el input type="date"
-        fechaContratacionInput.value = empleado.fechaContratacion ? new Date(empleado.fechaContratacion).toISOString().split('T')[0] : '';
-        puestoInput.value = empleado.puesto;
-        salarioInput.value = empleado.salario;
-        estadoInput.value = empleado.estado; // Rellenar el select
+    if (e.target.classList.contains('eliminar-btn')) {
+      if (!confirm('¿Eliminar este empleado?')) return;
 
-        formTitle.textContent = 'Editar';
-        submitBtn.textContent = 'Actualizar Empleado';
-        cancelBtn.style.display = 'inline-block'; // Mostrar botón de cancelar
-        displayMessage('formMessage', '', false); // Limpiar mensaje del formulario
+      try {
+        const res = await fetch(`${apiUrl}/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        alert(data.message);
+        await cargarEmpleados();
+      } catch (err) {
+        alert('Error al eliminar empleado');
+      }
     }
+  });
 
-    // Función para resetear el formulario
-    function resetForm() {
-        empleadoForm.reset();
-        currentEditingEmpleadoId = null;
-        empleadoIdInput.value = '';
-        formTitle.textContent = 'Crear';
-        submitBtn.textContent = 'Crear Empleado';
-        cancelBtn.style.display = 'none';
-        displayMessage('formMessage', '', false);
-    }
-
-    // Confirmación antes de eliminar
-    async function confirmDeleteEmpleado(id, nombre) {
-        if (confirm(`¿Estás seguro de que quieres eliminar a ${nombre}?`)) {
-            try {
-                await deleteEmpleado(id);
-                displayMessage('listMessage', `Empleado ${nombre} eliminado exitosamente.`, false);
-                loadEmpleados(); // Recargar la lista
-            } catch (error) {
-                console.error('Error al eliminar empleado:', error);
-                displayMessage('listMessage', 'Error al eliminar empleado: ' + error.message, true);
-            }
-        }
-    }
-
-    // Manejador del submit del formulario (Crear/Actualizar)
-    empleadoForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        displayMessage('formMessage', 'Procesando...', false);
-
-        const empleadoData = {
-            nombre: nombreInput.value,
-            apellido: apellidoInput.value,
-            email: emailInput.value,
-            telefono: telefonoInput.value,
-            fechaContratacion: fechaContratacionInput.value,
-            puesto: puestoInput.value,
-            salario: parseFloat(salarioInput.value),
-            estado: estadoInput.value
-        };
-
-        try {
-            if (currentEditingEmpleadoId) {
-                await updateEmpleado(currentEditingEmpleadoId, empleadoData);
-                displayMessage('formMessage', 'Empleado actualizado exitosamente.', false);
-            } else {
-                await createEmpleado(empleadoData);
-                displayMessage('formMessage', 'Empleado creado exitosamente.', false);
-            }
-            resetForm();
-            loadEmpleados(); // Recargar la lista de empleados
-        } catch (error) {
-            console.error('Error al guardar empleado:', error);
-            displayMessage('formMessage', 'Error al guardar empleado: ' + error.message, true);
-        }
-    });
-
-    // Manejador del botón Cancelar
-    cancelBtn.addEventListener('click', resetForm);
-
-    // Cargar empleados al iniciar la página
-    loadEmpleados();
+  // Inicializar
+  cargarEmpleados();
 }
