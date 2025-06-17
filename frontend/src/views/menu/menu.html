@@ -1,0 +1,56 @@
+<div class="menu-container">
+  <h2>Gestión del Menú</h2>
+
+  <form id="menuForm" class="form">
+    <input type="hidden" id="menuId">
+
+    <div class="form-group">
+      <label for="nombre">Nombre del platillo:</label>
+      <input type="text" id="nombre" required>
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción:</label>
+      <textarea id="descripcion" required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="precio">Precio:</label>
+      <input type="number" id="precio" step="0.01" required>
+    </div>
+
+    <div class="form-group">
+      <label for="categoria">Categoría:</label>
+      <select id="categoria" required>
+        <option value="">Seleccione...</option>
+        <option value="Entrada">Entrada</option>
+        <option value="Plato Fuerte">Plato Fuerte</option>
+        <option value="Postre">Postre</option>
+        <option value="Bebida">Bebida</option>
+      </select>
+    </div>
+
+    <div class="form-buttons">
+      <button type="submit" class="btn btn-primary">Guardar</button>
+      <button type="button" id="resetBtn" class="btn btn-secondary">Limpiar</button>
+    </div>
+  </form>
+
+  <h3>Lista del Menú</h3>
+  <table id="menuTable" class="table">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Precio</th>
+        <th>Categoría</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Aquí se cargan los productos dinámicamente -->
+    </tbody>
+  </table>
+
+  <button id="volverDashboardBtn" class="btn btn-danger mt-4">Volver al Dashboard</button>
+</div>
