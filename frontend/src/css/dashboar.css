@@ -1,102 +1,253 @@
+/* frontend/src/style.css o <style> block en index.html */
+/* frontend/src/style.css o <style> block en index.html */
+
+/* Estilos globales y reseteos básicos */
 body {
-  font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(135deg, #ecf0f1, #ffffff);
-  color: #333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    /* CAMBIO: Padding top/bottom para asegurar espacio si el contenido es más alto que la vista */
+    padding: 20px 0; 
+    display: flex;
+    justify-content: center;
+    /* CAMBIO: align-items a flex-start para que el contenido empiece desde arriba */
+    align-items: flex-start; 
+    min-height: 100vh;
+    box-sizing: border-box;
+    color: #333;
 }
 
 .dashboard-container {
-  max-width: 1300px;
-  margin: auto;
-  padding: 50px 20px;
-  text-align: center;
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 1200px; /* Ancho máximo del contenedor principal */
+    width: 90%; /* CAMBIO: Permite que el contenedor ocupe el 90% del ancho del body, dejando márgenes laterales */
+    margin: 20px auto; /* Centra el contenedor horizontalmente y añade margen vertical */
+    min-height: 80vh; /* Asegura una altura mínima para el contenedor, si el contenido es menor */
+    
+    /* Usamos flexbox para organizar el título, párrafo y la cuadrícula DEBAJO unos de otros */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra horizontalmente el contenido dentro del dashboard-container */
+    justify-content: flex-start; /* Alinea el contenido principal al inicio (arriba) */
 }
 
-h1 {
-  font-size: 2.8rem;
-  color: #2c3e50;
-  margin-bottom: 10px;
+.dashboard-container h2 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 2.8em;
+    font-weight: 700;
 }
 
-p {
-  font-size: 1.2rem;
-  color: #555;
-  margin-bottom: 40px;
+.dashboard-container p {
+    color: #7f8c8d;
+    margin-bottom: 30px;
+    font-size: 1.1em;
 }
 
-.dashboard-sections {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
-  padding: 0 10px;
+/* Contenedor de la cuadrícula de tarjetas */
+.dashboard-grid {
+    display: grid;
+    /* Esto es la clave para el layout horizontal y responsive: */
+    /* Crea columnas que intentan ser al menos de 300px (minmax(300px, 1fr)) */
+    /* y "auto-fit" las ajusta para que quepan tantas como sea posible en el ancho disponible. */
+    /* Si el espacio no permite 2x300px, se irá a 1x1fr (columna completa). */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* CAMBIO: min-width a 300px */
+    gap: 30px; /* Espacio entre las tarjetas */
+    margin-bottom: 40px;
+    width: 100%; /* La cuadrícula ocupa todo el ancho disponible de su padre */
+    justify-content: center; /* Centra las tarjetas dentro de la cuadrícula si no llenan todo el ancho */
 }
 
-.card {
-  border-radius: 16px;
-  color: #fff;
-  padding: 30px 20px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
-  overflow: hidden;
+/* Estilos base para cada botón que actúa como tarjeta */
+.btn-dashboard {
+    border: none; /* Elimina bordes */
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background-color 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Empuja el card-link hacia abajo */
+    align-items: center; /* Centra horizontalmente los elementos hijos (icono, h3, p, card-link) */
+    min-height: 280px; /* Altura mínima para que las tarjetas se vean uniformes */
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    color: white; /* Color de texto blanco para contrastar con los fondos de color */
+    text-decoration: none;
 }
 
-.card h3 {
-  margin-top: 0;
-  font-size: 1.5rem;
+/* Colores de fondo de las "cards" completas usando data-card-color */
+.btn-dashboard[data-card-color="blue"] { background-color: #007bff; }
+.btn-dashboard[data-card-color="purple"] { background-color: #6f42c1; }
+.btn-dashboard[data-card-color="orange"] { background-color: #fd7e14; }
+.btn-dashboard[data-card-color="teal"] { background-color: #20c997; }
+.btn-dashboard[data-card-color="red"] { background-color: #dc3545; }
+.btn-dashboard[data-card-color="green"] { background-color: #28a745; }
+.btn-dashboard[data-card-color="dark"] { background-color: #343a40; }
+
+
+/* Efecto hover para las tarjetas: se oscurecen ligeramente al pasar el mouse */
+.btn-dashboard:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+    filter: brightness(95%); 
 }
 
-.card p {
-  font-size: 1rem;
-  margin: 15px 0;
+
+/* Contenido principal de la tarjeta */
+.card-content {
+    flex-grow: 1; /* Permite que este div ocupe el espacio disponible */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra horizontalmente el icono, h3 y p */
+    justify-content: center; /* Centra verticalmente el icono, h3 y p */
+    margin-bottom: 20px;
+    width: 100%;
 }
 
-.card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+/* Estilos del icono */
+.card-icon {
+    font-size: 3.5em;
+    margin-bottom: 20px;
+    color: rgba(255, 255, 255, 0.8); /* Color blanco/claro para contraste */
+    transition: color 0.3s ease, opacity 0.3s ease;
 }
 
-/* Colores de las tarjetas */
-.card-blue    { background: linear-gradient(135deg, #3498db, #2980b9); }
-.card-purple  { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
-.card-orange  { background: linear-gradient(135deg, #e67e22, #d35400); }
-.card-teal    { background: linear-gradient(135deg, #1abc9c, #16a085); }
-.card-red     { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-.card-green   { background: linear-gradient(135deg, #2ecc71, #27ae60); }
-.card-dark    { background: linear-gradient(135deg, #bfc4c9, #bfc8d1); }
-
-/* Botones */
-.btn {
-  background: rgba(255,255,255,0.2);
-  color: #fff;
-  padding: 10px 18px;
-  border: 2px solid #fff;
-  border-radius: 30px;
-  font-weight: bold;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.25s ease-in-out;
+/* Estilos del título dentro de la tarjeta */
+.btn-dashboard h3 {
+    color: white;
+    margin-top: 0;
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-wrap: balance; 
 }
 
-.btn:hover {
-  background: #fff;
-  color: #2c3e50;
+/* Estilos del párrafo de descripción dentro de la tarjeta */
+.btn-dashboard p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95em;
+    line-height: 1.6;
+    margin-bottom: 0;
 }
 
-/* Botón de cerrar sesión */
-.btn-logout {
-  margin-top: 40px;
-  background: #e74c3c;
-  border: none;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-size: 16px;
-  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
-  transition: background 0.3s ease;
+/* Estilos para el botón inferior "Ir a..." (card-link) */
+.card-link {
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.2); /* Fondo semitransparente blanco */
+    color: white; /* Texto blanco */
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    width: fit-content;
+    align-self: center; /* Centra el botón dentro del flexbox de .btn-dashboard */
 }
 
-.btn-logout:hover {
-  background: #c0392b;
+.card-link:hover {
+    background-color: white; /* Fondo blanco sólido al pasar el mouse */
+    color: black; /* El color del texto del botón hereda el color de la card */
+}
+
+/* Estilo para el botón de cerrar sesión */
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 50px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilo para ocultar los elementos controlados por JavaScript */
+.hidden {
+    display: none !important;
+}
+
+/* Media Queries para responsividad */
+/* Desktop grande: intenta 3 columnas */
+@media (min-width: 1025px) { /* CAMBIO: Ajuste para que 3 columnas se vean bien en pantallas más grandes */
+    .dashboard-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Desktop/Tablet (landscape): 2 o 3 columnas, ajustándose */
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Ligeramente más pequeño min-width */
+        gap: 25px;
+    }
+    .btn-dashboard {
+        min-height: 260px;
+        padding: 25px;
+    }
+    .card-icon {
+        font-size: 3em;
+    }
+    .btn-dashboard h3 {
+        font-size: 1.6em;
+    }
+}
+
+/* Tablet (portrait) y móviles: 1 columna */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 30px;
+        width: 95%; /* Ocupa más ancho en pantallas pequeñas */
+    }
+    .dashboard-container h2 {
+        font-size: 2.2em;
+    }
+    .dashboard-grid {
+        grid-template-columns: 1fr; /* Forzar una sola columna */
+        gap: 20px;
+    }
+    .btn-dashboard {
+        min-height: auto; /* Permite que la altura se ajuste al contenido */
+        padding: 20px;
+    }
+    .card-icon {
+        font-size: 2.8em;
+        margin-bottom: 15px;
+    }
+    .btn-dashboard h3 {
+        font-size: 1.4em;
+    }
+    .dashboard-container p {
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-container {
+        padding: 15px;
+    }
+    .dashboard-container h2 {
+        font-size: 1.8em;
+    }
+    .card-link {
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
 }

@@ -10,56 +10,88 @@
 </head>
 <body>
 
-  <div class="dashboard-container">
-    <h1>Bienvenido</h1>
-    <p>Has iniciado sesión como: <strong id="userName">Usuario</strong> (Rol: <strong id="userRole">Administrador</strong>)</p>
+<div class="dashboard-container">
+    <h2 id="welcomeMessage">Bienvenido</h2>
+    <p>Has iniciado sesión como: <strong id="userName"></strong> (Rol: <strong id="userRole"></strong>)</p>
 
-    <div class="dashboard-sections">
-      <div class="card card-blue">
-        <h3>Gestión de Empleados</h3>
-        <p>Administra la información de los empleados.</p>
-        <button id="gestionEmpleadosLink" class="btn">Ir a Empleados</button>
-      </div>
+    <div class="dashboard-grid">
+        <button id="btnGestionEmpleados" class="btn btn-dashboard"
+                onclick="window.router.navigate('/gestion-empleados')"
+                data-roles-permitidos="1" data-card-color="blue">
+            <div class="card-content">
+                <i class="fas fa-users card-icon"></i>
+                <h3>Gestión de Empleados</h3>
+                <p>Administra la información de los empleados de tu restaurante.</p>
+            </div>
+            <span class="card-link">Ir a Empleados</span>
+        </button>
 
-      <div class="card card-purple">
-        <h3>Gestión de Menú</h3>
-        <p>Define y organiza los ítems del menú.</p>
-        <button id="gestionMenuLink" class="btn">Ir a Menú</button>
-      </div>
+        <button id="btnGestionMenu" class="btn btn-dashboard"
+                onclick="window.router.navigate('/gestion-menu')"
+                data-roles-permitidos="1" data-card-color="purple">
+            <div class="card-content">
+                <i class="fas fa-book-open card-icon"></i>
+                <h3>Gestión de Menú</h3>
+                <p>Define y organiza los ítems del menú de tu restaurante.</p>
+            </div>
+            <span class="card-link">Ir a Menú</span>
+        </button>
 
-      <div class="card card-orange">
-        <h3>Gestión de Pedidos</h3>
-        <p>Supervisa y gestiona los pedidos de los clientes.</p>
-        <button id="gestionPedidosLink" class="btn">Ir a Pedidos</button>
-      </div>
+        <button id="btnGestionPedidos" class="btn btn-dashboard"
+                onclick="window.router.navigate('/gestion-pedidos')"
+                data-roles-permitidos="1,2" data-card-color="orange">
+            <div class="card-content">
+                <i class="fas fa-clipboard-list card-icon"></i>
+                <h3>Gestión de Pedidos</h3>
+                <p>Supervisa y gestiona los pedidos de los clientes.</p>
+            </div>
+            <span class="card-link">Ir a Pedidos</span>
+        </button>
 
-      <div class="card card-teal">
-        <h3>Estado de Pedidos</h3>
-        <p>Consulta el estado actual de los pedidos.</p>
-        <button id="estadoPedidosLink" class="btn">Ver Estado</button>
-      </div>
+        <button id="btnEstadoPedidos" class="btn btn-dashboard"
+                onclick="window.router.navigate('/estado-pedidos')"
+                data-roles-permitidos="1,2,3" data-card-color="teal">
+            <div class="card-content">
+                <i class="fas fa-chart-line card-icon"></i>
+                <h3>Estado de Pedidos</h3>
+                <p>Consulta el estado actual de los pedidos en tiempo real.</p>
+            </div>
+            <span class="card-link">Ver Estado</span>
+        </button>
 
-      <div class="card card-red">
-        <h3>Gestión de Cocina</h3>
-        <p>Controla las órdenes y el flujo de la cocina.</p>
-        <button id="gestionCocinaLink" class="btn">Ir a Cocina</button>
-      </div>
+        <button id="btnGestionCocina" class="btn btn-dashboard"
+                onclick="window.router.navigate('/gestion-cocina')"
+                data-roles-permitidos="1,3" data-card-color="red">
+            <div class="card-content">
+                <i class="fas fa-utensils card-icon"></i>
+                <h3>Gestión de Cocina</h3>
+                <p>Controla las órdenes y el flujo de trabajo de la cocina.</p>
+            </div>
+            <span class="card-link">Ir a Cocina</span>
+        </button>
 
-      <div class="card card-green">
-        <h3>Procesamiento de Pagos</h3>
-        <p>Maneja las transacciones y pagos.</p>
-        <button id="procesamientoPagosLink" class="btn">Ir a Pagos</button>
-      </div>
+        <button id="btnProcesamientoPagos" class="btn btn-dashboard"
+                onclick="window.router.navigate('/procesamiento-pagos')"
+                data-roles-permitidos="1" data-card-color="green">
+            <div class="card-content">
+                <i class="fas fa-credit-card card-icon"></i>
+                <h3>Procesamiento de Pagos</h3>
+                <p>Maneja las transacciones y pagos de forma segura.</p>
+            </div>
+            <span class="card-link">Ir a Pagos</span>
+        </button>
 
-      <div class="card card-dark">
-        <h3>Reportes</h3>
-        <p>Genera informes y estadísticas del negocio.</p>
-        <button id="reportesLink" class="btn">Ver Reportes</button>
-      </div>
+        <button id="btnReportes" class="btn btn-dashboard"
+                onclick="window.router.navigate('/reportes')"
+                data-roles-permitidos="1" data-card-color="dark">
+            <div class="card-content">
+                <i class="fas fa-chart-bar card-icon"></i>
+                <h3>Reportes</h3>
+                <p>Genera informes y estadísticas detalladas del negocio.</p>
+            </div>
+            <span class="card-link">Ver Reportes</span>
+        </button>
     </div>
 
-    <button id="logoutButton" class="btn btn-logout">Cerrar Sesión</button>
-  </div>
-
-</body>
-</html>
+    <button class="btn btn-danger mt-4" id="logoutButton">Cerrar Sesión</button>
+</div>
