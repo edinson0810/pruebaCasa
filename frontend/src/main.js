@@ -3,7 +3,7 @@
 
 import { Router } from './router/router.js';
 import { LoginPage } from './pages/LoginPage.js';
-import { RegisterPage } from './pages/RegisterPage.js';
+// import { RegisterPage } from './pages/RegisterPage.js';
 import { DashboardPage } from './pages/DashboardPage.js';
 import { GestionEmpleadosPage } from './pages/GestionEmpleadosPage.js';
 // ✅ Nuevas importaciones
@@ -21,7 +21,7 @@ window.router = router;
 // Definición de Rutas
 router.addRoute('/', LoginPage);
 router.addRoute('/login', LoginPage);
-router.addRoute('/register', RegisterPage);
+// router.addRoute('/register', RegisterPage);
 router.addRoute('/dashboard', DashboardPage);
 router.addRoute('/gestion-empleados', GestionEmpleadosPage);
 // ✅ Nuevas rutas
