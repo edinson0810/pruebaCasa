@@ -1,0 +1,66 @@
+<link rel="stylesheet" href="/src/css/pedidos.css">
+<div id="pedidos-view" class="container mt-4">
+    <h2 class="mb-4">Gestión de Pedidos</h2>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Crear/Editar Pedido
+        </div>
+        <div class="card-body">
+            <form id="pedidoForm">
+                <input type="hidden" id="pedidoId">
+
+                <div class="mb-3">
+                    <label for="usuario" class="form-label">ID Mesero:</label>
+                    <input type="number" class="form-control" id="usuario" required min="1" placeholder="ID del Mesero (Autocompletado)">
+                </div>
+
+                <div class="mb-3">
+                    <label for="mesa" class="form-label">ID Mesa:</label>
+                    <input type="number" class="form-control" id="mesa" required min="1" placeholder="ID de la Mesa (ej. 5)">
+                </div>
+
+                <div class="mb-3">
+                    <label for="estado" class="form-label">Estado:</label>
+                    <select class="form-select" id="estado" required>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en_proceso">En Proceso</option>
+                        <option value="completado">Completado</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
+
+                <h5 class="mt-4 mb-3">Productos del Pedido:</h5>
+                <div id="itemsContainer" class="border p-3 rounded bg-light">
+                    <div class="item-row" data-item-index="0">
+                        <div class="mb-3">
+                            <label for="menuItem0" class="form-label visually-hidden">Producto</label>
+                            <select class="form-select menuItem" id="menuItem0" data-index="0" required>
+                                <option value="">Seleccione un producto</option>
+                                </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cantidadItem0" class="form-label visually-hidden">Cantidad</label>
+                            <input type="number" class="form-control cantidadItem" id="cantidadItem0" data-index="0" value="1" min="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="precioUnitarioItem0" class="form-label visually-hidden">Precio Unitario</label>
+                            <input type="text" class="form-control precioUnitarioItem" id="precioUnitarioItem0" data-index="0" value="" readonly placeholder="Precio">
+                        </div>
+                        <div class="mb-3">
+                            <button type="button" class="removeItemBtn">X</button>
+                        </div>
+                    </div>
+                    </div>
+                <button type="button" class="btn btn-secondary btn-sm mt-3 mb-3" id="addItemBtn">Añadir Producto</button>
+
+                <div class="d-flex justify-content-between mt-4 flex-wrap gap-2">
+                    <button type="submit" class="btn btn-primary flex-fill">Guardar Pedido</button>
+                    <button type="button" class="btn btn-warning flex-fill" id="resetPedidoBtn">Limpiar Formulario</button>
+                    <button type="button" class="btn btn-info flex-fill" id="volverDashboardBtn">Volver al Dashboard</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    </div>
