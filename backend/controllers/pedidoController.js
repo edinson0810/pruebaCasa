@@ -1,179 +1,179 @@
-import db from '../database.js'; // Asegúrate de que la ruta a tu conexión de DB sea correcta
+// backend/controllers/pedidoController.js (VERSIÓN FINAL para MySQL/MariaDB)
 
-// Helper para ejecutar consultas con promesas (facilita el uso de async/await)
-const queryAsync = (sql, values) => {
-    return new Promise((resolve, reject) => {
-        db.query(sql, values, (err, results) => {
-            if (err) {
-                return reject(err);
-            }
-            resolve(results);
-        });
-    });
-};
+import mysql from 'mysql2/promise'; // para poder usar beginTransaction/commit/rollback correctamente
+import db from '../database.js';     // conexión básica para consultas simples
 
-// Obtener todos los pedidos (con join para usuario_nombre y detalles resumidos)
+
+// Nota: Eliminamos queryAsync aquí porque db.execute ya devuelve promesas y es más directo.
+
+// Obtener todos los pedidos
 export const obtenerPedidos = async (req, res) => {
     try {
-        // Obtenemos los pedidos principales
-        const pedidos = await queryAsync(`
-            SELECT 
-                p.id, 
-                p.usuario_id, 
-                u.nombre_usuario AS nombre_mesero, -- Asumo que 'usuarios' tiene 'nombre_usuario'
-                p.mesa_id, 
-                m.numero_mesa AS numero_mesa,     -- Asumo que 'mesas' tiene 'numero_mesa'
-                p.fecha_pedido, 
-                p.estado
-            FROM 
+        const [pedidosRows] = await db.execute(`
+            SELECT
+                p.id,
+                p.usuario_id,
+                u.nombre AS nombre_usuario, -- Cambié de 'nombre_mesero' a 'nombre_usuario' y asumí 'nombre' en tabla 'usuarios'
+                p.mesa_id,
+                m.numero_mesa AS numero_mesa,
+                p.fecha_pedido,
+                p.estado,
+                p.total
+            FROM
                 pedidos p
-            JOIN 
+            JOIN
                 usuarios u ON p.usuario_id = u.id
-            JOIN 
+            JOIN
                 mesas m ON p.mesa_id = m.id
             ORDER BY p.fecha_pedido DESC;
         `);
 
         // Para cada pedido, obtener sus detalles
-        for (const pedido of pedidos) {
-            const detalles = await queryAsync(`
-                SELECT 
-                    dp.menu_id, 
-                    me.nombre AS producto_nombre, -- Asumo que 'menu' tiene 'nombre'
-                    dp.cantidad, 
+        for (const pedido of pedidosRows) {
+            const [detallesRows] = await db.execute(`
+                SELECT
+                    dp.menu_id,
+                    me.nombre AS producto_nombre,
+                    dp.cantidad,
                     dp.precio_unitario
-                FROM 
+                FROM
                     detalle_pedido dp
-                JOIN 
+                JOIN
                     menu me ON dp.menu_id = me.id
                 WHERE dp.pedido_id = ?;
-            `, [pedido.id]);
-            pedido.detalles = detalles; // Añade los detalles al objeto pedido
-            
-            // Calcula el total del pedido en el backend
-            pedido.total = detalles.reduce((sum, item) => sum + (item.cantidad * item.precio_unitario), 0);
+            `, [pedido.id]); // Usar ? para MySQL
+            pedido.detalles = detallesRows;
+            // El total ya lo recuperamos de la tabla, pero podemos recalcularlo si queremos asegurar
+            // pedido.total = detallesRows.reduce((sum, item) => sum + (item.cantidad * item.precio_unitario), 0);
         }
 
-        res.json(pedidos);
+        res.json(pedidosRows);
     } catch (err) {
         console.error('Error al obtener pedidos:', err);
         res.status(500).json({ message: 'Error interno del servidor al obtener pedidos', error: err.message });
     }
 };
 
-// Obtener un pedido por ID (con detalles completos)
+// Obtener un pedido por ID
 export const obtenerPedidoPorId = async (req, res) => {
     const { id } = req.params;
     try {
-        // Obtener el pedido principal
-        const pedido = await queryAsync(`
-            SELECT 
-                p.id, 
-                p.usuario_id, 
-                u.nombre_usuario AS nombre_mesero, 
-                p.mesa_id, 
-                m.numero_mesa AS numero_mesa, 
-                p.fecha_pedido, 
-                p.estado
-            FROM 
+        const [pedidoRows] = await db.execute(`
+            SELECT
+                p.id,
+                p.usuario_id,
+                u.nombre AS nombre_usuario, -- Cambié a u.nombre
+                p.mesa_id,
+                m.numero_mesa AS numero_mesa,
+                p.fecha_pedido,
+                p.estado,
+                p.total
+            FROM
                 pedidos p
-            JOIN 
+            JOIN
                 usuarios u ON p.usuario_id = u.id
-            JOIN 
+            JOIN
                 mesas m ON p.mesa_id = m.id
             WHERE p.id = ?;
-        `, [id]);
+        `, [id]); // Usar ? para MySQL
 
-        if (pedido.length === 0) {
+        if (pedidoRows.length === 0) {
             return res.status(404).json({ message: 'Pedido no encontrado' });
         }
+        const pedido = pedidoRows[0];
 
-        // Obtener los detalles del pedido
-        const detalles = await queryAsync(`
-            SELECT 
-                dp.id, -- id del detalle_pedido
-                dp.menu_id, 
-                me.nombre AS producto_nombre, 
-                dp.cantidad, 
+        const [detallesRows] = await db.execute(`
+            SELECT
+                dp.id,
+                dp.menu_id,
+                me.nombre AS producto_nombre,
+                dp.cantidad,
                 dp.precio_unitario
-            FROM 
+            FROM
                 detalle_pedido dp
-            JOIN 
+            JOIN
                 menu me ON dp.menu_id = me.id
             WHERE dp.pedido_id = ?;
-        `, [id]);
+        `, [id]); // Usar ? para MySQL
 
-        pedido[0].detalles = detalles; // Añade los detalles al pedido
-        pedido[0].total = detalles.reduce((sum, item) => sum + (item.cantidad * item.precio_unitario), 0); // Calcular total
+        pedido.detalles = detallesRows;
+        // El total ya lo recuperamos, pero podemos recalcularlo si queremos asegurar
+        // pedido.total = detallesRows.reduce((sum, item) => sum + (item.cantidad * item.precio_unitario), 0);
 
-        res.json(pedido[0]);
+        res.json(pedido);
     } catch (err) {
         console.error('Error al obtener pedido por ID:', err);
         res.status(500).json({ message: 'Error interno del servidor al obtener pedido', error: err.message });
     }
 };
 
-// Crear un nuevo pedido (¡Ahora incluye detalles de pedido y transacción!)
+// Crear un nuevo pedido
 export const crearPedido = async (req, res) => {
-    // req.body debe contener:
-    // {
-    //   usuario_id: INT,
-    //   mesa_id: INT,
-    //   estado: STRING (opcional, default 'Pendiente'),
-    //   items: [ // Array de objetos para detalle_pedido
-    //     { menu_id: INT, cantidad: INT },
-    //     { menu_id: INT, cantidad: INT }
-    //   ]
-    // }
-    const { usuario_id, mesa_id, estado = 'Pendiente', items } = req.body; // 'estado' con valor por defecto
-    
-    // Validaciones
-    if (!usuario_id || !mesa_id || !items || items.length === 0) {
-        return res.status(400).json({ message: 'Usuario, mesa e ítems del pedido son obligatorios.' });
+  const { usuario_id, mesa_id, estado, items } = req.body;
+
+  if (!usuario_id || !mesa_id || !items || items.length === 0) {
+    return res.status(400).json({ message: 'Faltan datos obligatorios para crear el pedido.' });
+  }
+
+  let connection;
+  try {
+    // Usamos mysql2/promise para crear una nueva conexión temporal (no pool)
+    connection = await mysql.createConnection({
+      host: 'localhost',
+      user: 'root',
+      password: 'Yamir081015',
+      database: 'restaurant_system'
+    });
+
+    await connection.beginTransaction();
+
+    let totalPedido = 0;
+    for (const item of items) {
+      const cantidad = parseFloat(item.cantidad);
+      const precioUnitario = parseFloat(item.precio_unitario);
+
+      if (isNaN(cantidad) || isNaN(precioUnitario)) {
+        throw new Error(`Datos inválidos para producto con menu_id ${item.menu_id}`);
+      }
+
+      totalPedido += cantidad * precioUnitario;
     }
 
-    // Iniciar una transacción
-    try {
-        await queryAsync('START TRANSACTION;');
+    // Insertar el pedido principal
+    const [pedidoResult] = await connection.execute(
+      `INSERT INTO pedidos (usuario_id, mesa_id, estado, fecha_pedido, total) VALUES (?, ?, ?, NOW(), ?)`,
+      [usuario_id, mesa_id, estado || 'pendiente', totalPedido]
+    );
 
-        // 1. Insertar el pedido principal
-        const pedidoResult = await queryAsync(
-            'INSERT INTO pedidos (usuario_id, mesa_id, estado) VALUES (?, ?, ?)', // 'fecha_pedido' se llenará automáticamente
-            [usuario_id, mesa_id, estado]
-        );
-        const pedidoId = pedidoResult.insertId;
+    const pedidoId = pedidoResult.insertId;
 
-        // 2. Insertar los detalles del pedido
-        for (const item of items) {
-            // Obtener el precio unitario actual del menú para asegurar consistencia
-            const productoMenu = await queryAsync('SELECT precio FROM menu WHERE id = ?', [item.menu_id]);
-            if (productoMenu.length === 0) {
-                throw new Error(`Producto con ID ${item.menu_id} no encontrado.`);
-            }
-            const precioUnitario = productoMenu[0].precio;
-
-            await queryAsync(
-                'INSERT INTO detalle_pedido (pedido_id, menu_id, cantidad, precio_unitario) VALUES (?, ?, ?, ?)',
-                [pedidoId, item.menu_id, item.cantidad, precioUnitario]
-            );
-        }
-
-        await queryAsync('COMMIT;'); // Confirmar la transacción
-        res.status(201).json({ message: 'Pedido creado exitosamente', id: pedidoId });
-
-    } catch (err) {
-        await queryAsync('ROLLBACK;'); // Revertir la transacción si algo falla
-        console.error('Error al crear pedido (transacción):', err);
-        res.status(500).json({ message: 'Error interno del servidor al crear pedido', error: err.message });
+    // Insertar los ítems del pedido
+    for (const item of items) {
+      await connection.execute(
+        `INSERT INTO detalle_pedido (pedido_id, menu_id, cantidad, precio_unitario) VALUES (?, ?, ?, ?)`,
+        [pedidoId, item.menu_id, item.cantidad, item.precio_unitario]
+      );
     }
+
+    await connection.commit();
+    res.status(201).json({ message: 'Pedido creado exitosamente', pedidoId });
+
+  } catch (error) {
+    if (connection) await connection.rollback();
+    // console.error('❌ Error al crear pedido:', error.message);
+    //  console.error('❌ Stack trace:', error.stack); 
+    // res.status(500).json({ message: 'Error interno del servidor al crear pedido', error: error.message });
+  } finally {
+    if (connection) await connection.end();
+  }
 };
 
-// Actualizar un pedido (solo estado, usuario y mesa. Los ítems de detalle_pedido son más complejos de actualizar aquí)
+
+// Actualizar un pedido
 export const actualizarPedido = async (req, res) => {
     const { id } = req.params;
-    const { usuario_id, mesa_id, estado } = req.body; // No actualizamos ítems directamente aquí
+    const { usuario_id, mesa_id, estado, total } = req.body; // Añadir 'total' si se puede actualizar desde fuera
 
-    // Construir la consulta de forma dinámica para actualizar solo los campos presentes
     let updateFields = [];
     let updateValues = [];
 
@@ -189,6 +189,10 @@ export const actualizarPedido = async (req, res) => {
         updateFields.push('estado = ?');
         updateValues.push(estado);
     }
+    if (total !== undefined) { // Permite actualizar el total si se envía
+        updateFields.push('total = ?');
+        updateValues.push(total);
+    }
 
     if (updateFields.length === 0) {
         return res.status(400).json({ message: 'No se proporcionaron campos para actualizar.' });
@@ -198,8 +202,8 @@ export const actualizarPedido = async (req, res) => {
     updateValues.push(id);
 
     try {
-        const result = await queryAsync(sql, updateValues);
-        if (result.affectedRows === 0) {
+        const [result] = await db.execute(sql, updateValues);
+        if (result.affectedRows === 0) { // affectedRows para MySQL
             return res.status(404).json({ message: 'Pedido no encontrado para actualizar' });
         }
         res.json({ message: 'Pedido actualizado exitosamente' });
@@ -210,12 +214,12 @@ export const actualizarPedido = async (req, res) => {
 };
 
 
-// Eliminar un pedido (se eliminarán sus detalles debido a ON DELETE CASCADE)
+// Eliminar un pedido
 export const eliminarPedido = async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await queryAsync('DELETE FROM pedidos WHERE id = ?', [id]);
-        if (result.affectedRows === 0) {
+        const [result] = await db.execute('DELETE FROM pedidos WHERE id = ?', [id]);
+        if (result.affectedRows === 0) { // affectedRows para MySQL
             return res.status(404).json({ message: 'Pedido no encontrado para eliminar' });
         }
         res.json({ message: 'Pedido eliminado exitosamente' });

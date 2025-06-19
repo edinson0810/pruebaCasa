@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/roles', rolRoutes);
 app.use('/api/menu', menuRoutes);
-app.use('/api/pedido', pedidoRoutes);
+app.use('/api/pedidos', pedidoRoutes);
 app.use('/api/detalles', detallePedidoController);
 app.use('/api/cocina', cocinaController);
 app.use('/api/pago', pagoController);
