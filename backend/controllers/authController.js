@@ -1,10 +1,10 @@
-// authController.js
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import db from '../database.js';
+import db from '../database.js'; 
 import dotenv from 'dotenv';
 dotenv.config();
 
+// Registrar usuario
 export const registrarUsuario = async (req, res) => {
   const { nombre, email, password, rol_id } = req.body;
 
@@ -15,47 +15,46 @@ export const registrarUsuario = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    db.query(
+    await db.execute(
       'INSERT INTO usuarios (nombre, email, password, rol_id) VALUES (?, ?, ?, ?)',
-      [nombre, email, hashedPassword, rol_id],
-      (err) => {
-        if (err) {
-          if (err.code === 'ER_DUP_ENTRY') {
-            return res.status(409).json({ message: 'El email ya está registrado' });
-          }
-          return res.status(500).json({ message: 'Error al registrar usuario', error: err });
-        }
-
-        res.status(201).json({ message: 'Usuario registrado correctamente' });
-      }
+      [nombre, email, hashedPassword, rol_id]
     );
-  } catch (error) {
-    res.status(500).json({ message: 'Error en el servidor', error });
+
+    res.status(201).json({ message: 'Usuario registrado correctamente' });
+
+  } catch (err) {
+    if (err.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ message: 'El email ya está registrado' });
+    }
+    console.error('Error al registrar usuario:', err);
+    res.status(500).json({ message: 'Error al registrar usuario', error: err.message });
   }
 };
 
-// ✅ Leer todos los usuarios
-export const listarUsuarios = (req, res) => {
-  db.query('SELECT id, nombre, email, rol_id FROM usuarios', (err, results) => {
-    if (err) return res.status(500).json({ message: 'Error al obtener usuarios', error: err });
-
-    res.status(200).json(results);
-  });
+// Obtener todos los usuarios
+export const listarUsuarios = async (req, res) => {
+  try {
+    const [rows] = await db.execute('SELECT id, nombre, email, rol_id FROM usuarios');
+    res.status(200).json(rows);
+  } catch (err) {
+    res.status(500).json({ message: 'Error al obtener usuarios', error: err.message });
+  }
 };
 
-// ✅ Leer un usuario por ID
-export const obtenerUsuario = (req, res) => {
+// Obtener un usuario por ID
+export const obtenerUsuario = async (req, res) => {
   const { id } = req.params;
 
-  db.query('SELECT id, nombre, email, rol_id FROM usuarios WHERE id = ?', [id], (err, results) => {
-    if (err) return res.status(500).json({ message: 'Error al obtener usuario', error: err });
-    if (results.length === 0) return res.status(404).json({ message: 'Usuario no encontrado' });
-
-    res.status(200).json(results[0]);
-  });
+  try {
+    const [rows] = await db.execute('SELECT id, nombre, email, rol_id FROM usuarios WHERE id = ?', [id]);
+    if (rows.length === 0) return res.status(404).json({ message: 'Usuario no encontrado' });
+    res.status(200).json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ message: 'Error al obtener usuario', error: err.message });
+  }
 };
 
-// ✅ Actualizar usuario
+// Actualizar usuario
 export const actualizarUsuario = async (req, res) => {
   const { id } = req.params;
   const { nombre, email, password, rol_id } = req.body;
@@ -65,133 +64,129 @@ export const actualizarUsuario = async (req, res) => {
   }
 
   try {
-    let updateQuery = '';
-    let params = [];
-
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
-      updateQuery = 'UPDATE usuarios SET nombre = ?, email = ?, password = ?, rol_id = ? WHERE id = ?';
-      params = [nombre, email, hashedPassword, rol_id, id];
+      await db.execute(
+        'UPDATE usuarios SET nombre = ?, email = ?, password = ?, rol_id = ? WHERE id = ?',
+        [nombre, email, hashedPassword, rol_id, id]
+      );
     } else {
-      updateQuery = 'UPDATE usuarios SET nombre = ?, email = ?, rol_id = ? WHERE id = ?';
-      params = [nombre, email, rol_id, id];
+      await db.execute(
+        'UPDATE usuarios SET nombre = ?, email = ?, rol_id = ? WHERE id = ?',
+        [nombre, email, rol_id, id]
+      );
     }
 
-    db.query(updateQuery, params, (err) => {
-      if (err) return res.status(500).json({ message: 'Error al actualizar usuario', error: err });
-
-      res.status(200).json({ message: 'Usuario actualizado correctamente' });
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error en el servidor', error });
+    res.status(200).json({ message: 'Usuario actualizado correctamente' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error al actualizar usuario', error: err.message });
   }
 };
 
-// ✅ Eliminar usuario
-export const eliminarUsuario = (req, res) => {
+// Eliminar usuario
+export const eliminarUsuario = async (req, res) => {
   const { id } = req.params;
 
-  db.query('DELETE FROM usuarios WHERE id = ?', [id], (err) => {
-    if (err) return res.status(500).json({ message: 'Error al eliminar usuario', error: err });
-
+  try {
+    const [result] = await db.execute('DELETE FROM usuarios WHERE id = ?', [id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Usuario no encontrado para eliminar' });
+    }
     res.status(200).json({ message: 'Usuario eliminado correctamente' });
-  });
+  } catch (err) {
+    res.status(500).json({ message: 'Error al eliminar usuario', error: err.message });
+  }
 };
 
-
-export const loginUsuario = (req, res) => {
+// Login
+export const loginUsuario = async (req, res) => {
   const { email, password } = req.body;
 
-    db.query('SELECT * FROM usuarios WHERE email = ?', [email], async (err, results) => {
-    if (err) {
-           return res.status(500).json({ message: 'Error al buscar el usuario', error: err });
+  try {
+    const [rows] = await db.execute('SELECT * FROM usuarios WHERE email = ?', [email]);
+
+    if (rows.length === 0) {
+      return res.status(401).json({ message: 'Usuario no encontrado' });
     }
 
-    if (results.length === 0) {
-           return res.status(401).json({ message: 'Usuario no encontrado' });
-    }
-
-    const usuario = results[0];
-  
-    // --- ¡EL PUNTO CLAVE! ---
+    const usuario = rows[0];
     const passwordValida = await bcrypt.compare(password, usuario.password);
-    
+
     if (!passwordValida) {
-           return res.status(401).json({ message: 'Contraseña incorrecta' });
+      return res.status(401).json({ message: 'Contraseña incorrecta' });
     }
 
-   // --- ¡AQUÍ ES DONDE VA EL CÓDIGO QUE PREGUNTASTE! ---
     const token = jwt.sign(
       { id: usuario.id, rol_id: usuario.rol_id },
       process.env.JWT_SECRET,
-      { expiresIn: '5m' } // Token válido por 5 minutos
+      { expiresIn: '5m' }
     );
-    console.log('Token generado:', token); // <-- Tu console.log aquí
 
     const refreshToken = jwt.sign(
       { id: usuario.id },
       process.env.JWT_REFRESH_SECRET,
-      { expiresIn: '1d' } // Refresh token válido por 1 día
+      { expiresIn: '1d' }
     );
-    console.log('Refresh Token generado:', refreshToken); // <-- Tu console.log aquí
-    // ----------------------------------------------------
 
-    console.log('Backend: Login exitoso para usuario:', email);
     res.status(200).json({
       message: 'Login exitoso',
       token,
       refreshToken,
-      user: { // Es buena práctica devolver algo de información del usuario al frontend
-          id: usuario.id,
-          email: usuario.email,
-          nombre: usuario.nombre,
-          rol_id: usuario.rol_id // Para que el frontend pueda manejar roles
+      user: {
+        id: usuario.id,
+        nombre: usuario.nombre,
+        email: usuario.email,
+        rol_id: usuario.rol_id
       }
     });
-  });
+
+  } catch (err) {
+    res.status(500).json({ message: 'Error en el servidor al iniciar sesión', error: err.message });
+  }
 };
 
+// Renovar token
 export const renovarToken = (req, res) => {
-    // Esta función típicamente:
-    // 1. Recibe el refreshToken del cliente (normalmente en el cuerpo o en las cookies).
-    // 2. Verifica la validez del refreshToken.
-    // 3. Si es válido, genera un nuevo accessToken y un nuevo refreshToken.
-    // 4. Envía los nuevos tokens al cliente.
+  const { refreshToken } = req.body;
 
-    // Ejemplo básico (necesitará más lógica para ser robusto):
-    const { refreshToken } = req.body; // O de las cookies, o de headers
+  if (!refreshToken) {
+    return res.status(401).json({ message: 'Refresh token no proporcionado' });
+  }
 
-    if (!refreshToken) {
-        return res.status(401).json({ message: 'Refresh token no proporcionado.' });
+  jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, async (err, payload) => {
+    if (err) {
+      return res.status(403).json({ message: 'Refresh token inválido o expirado' });
     }
 
-    jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
-        if (err) {
-            console.error('Error al verificar refresh token:', err);
-            return res.status(403).json({ message: 'Refresh token inválido o expirado.' });
-        }
+    try {
+      const [rows] = await db.execute('SELECT rol_id FROM usuarios WHERE id = ?', [payload.id]);
 
-        // Si el refresh token es válido, generar un nuevo token de acceso
-        // (Necesitas obtener el rol_id del usuario desde la DB o si viene en el refresh token)
-        // Asumo que tu refresh token solo tiene 'id', así que necesitarías buscar en la DB para el rol_id
-        // O, si sabes que es un ID de usuario válido, podrías generarlo solo con el ID por ahora
-        const newAccessToken = jwt.sign(
-            { id: user.id, rol_id: user.rol_id }, // Asegúrate de tener rol_id aquí
-            process.env.JWT_SECRET,
-            { expiresIn: '5m' }
-        );
+      if (rows.length === 0) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
 
-        const newRefreshToken = jwt.sign(
-            { id: user.id },
-            process.env.JWT_REFRESH_SECRET,
-            { expiresIn: '1d' }
-        );
+      const { rol_id } = rows[0];
 
-        res.status(200).json({
-            message: 'Token renovado exitosamente',
-            token: newAccessToken,
-            refreshToken: newRefreshToken
-        });
-    });
+      const newAccessToken = jwt.sign(
+        { id: payload.id, rol_id },
+        process.env.JWT_SECRET,
+        { expiresIn: '5m' }
+      );
+
+      const newRefreshToken = jwt.sign(
+        { id: payload.id },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: '1d' }
+      );
+
+      res.status(200).json({
+        message: 'Token renovado exitosamente',
+        token: newAccessToken,
+        refreshToken: newRefreshToken
+      });
+
+    } catch (error) {
+      res.status(500).json({ message: 'Error al renovar token', error: error.message });
+    }
+  });
 };
-    
