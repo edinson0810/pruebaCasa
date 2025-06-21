@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.41, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: restaurant_system
 -- ------------------------------------------------------
--- Server version	8.0.41
+-- Server version	8.0.42
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -27,7 +27,7 @@ CREATE TABLE `categorias` (
   `nombre` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -36,6 +36,7 @@ CREATE TABLE `categorias` (
 
 LOCK TABLES `categorias` WRITE;
 /*!40000 ALTER TABLE `categorias` DISABLE KEYS */;
+INSERT INTO `categorias` VALUES (4,'Bebida'),(1,'Carnes'),(2,'Hamburguesas'),(3,'Perros');
 /*!40000 ALTER TABLE `categorias` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -84,7 +85,7 @@ CREATE TABLE `detalle_pedido` (
   KEY `menu_id` (`menu_id`),
   CONSTRAINT `detalle_pedido_ibfk_1` FOREIGN KEY (`pedido_id`) REFERENCES `pedidos` (`id`) ON DELETE CASCADE,
   CONSTRAINT `detalle_pedido_ibfk_2` FOREIGN KEY (`menu_id`) REFERENCES `menu` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -93,6 +94,7 @@ CREATE TABLE `detalle_pedido` (
 
 LOCK TABLES `detalle_pedido` WRITE;
 /*!40000 ALTER TABLE `detalle_pedido` DISABLE KEYS */;
+INSERT INTO `detalle_pedido` VALUES (2,7,3,1,20000.00),(3,8,5,1,20000.00),(4,9,5,1,20000.00),(9,17,5,2,20000.00),(10,19,5,1,20000.00),(11,20,3,2,20000.00),(12,21,3,3,20000.00),(13,22,3,1,20000.00),(14,25,3,1,20000.00),(15,26,5,2,20000.00),(16,27,3,2,20000.00),(17,28,5,1,20000.00),(18,31,5,1,20000.00);
 /*!40000 ALTER TABLE `detalle_pedido` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -112,7 +114,7 @@ CREATE TABLE `menu` (
   PRIMARY KEY (`id`),
   KEY `categoria_id` (`categoria_id`),
   CONSTRAINT `menu_ibfk_1` FOREIGN KEY (`categoria_id`) REFERENCES `categorias` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -121,6 +123,7 @@ CREATE TABLE `menu` (
 
 LOCK TABLES `menu` WRITE;
 /*!40000 ALTER TABLE `menu` DISABLE KEYS */;
+INSERT INTO `menu` VALUES (3,'hamburguesa Brave','carne doble',20000.00,2),(5,'chatas','lalalal',20000.00,1);
 /*!40000 ALTER TABLE `menu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -137,7 +140,7 @@ CREATE TABLE `mesas` (
   `capacidad` int NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `numero` (`numero`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -146,6 +149,7 @@ CREATE TABLE `mesas` (
 
 LOCK TABLES `mesas` WRITE;
 /*!40000 ALTER TABLE `mesas` DISABLE KEYS */;
+INSERT INTO `mesas` VALUES (1,1,4),(2,2,4),(3,3,4),(4,4,4),(5,5,6);
 /*!40000 ALTER TABLE `mesas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -190,12 +194,14 @@ CREATE TABLE `pedidos` (
   `mesa_id` int NOT NULL,
   `fecha_pedido` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `estado` varchar(50) DEFAULT 'Pendiente',
+  `total` decimal(10,2) DEFAULT '0.00',
+  `observaciones` text,
   PRIMARY KEY (`id`),
   KEY `usuario_id` (`usuario_id`),
   KEY `mesa_id` (`mesa_id`),
   CONSTRAINT `pedidos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
   CONSTRAINT `pedidos_ibfk_2` FOREIGN KEY (`mesa_id`) REFERENCES `mesas` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -204,6 +210,7 @@ CREATE TABLE `pedidos` (
 
 LOCK TABLES `pedidos` WRITE;
 /*!40000 ALTER TABLE `pedidos` DISABLE KEYS */;
+INSERT INTO `pedidos` VALUES (7,1,5,'2025-06-19 23:02:14','pendiente',20000.00,NULL),(8,1,2,'2025-06-20 14:45:55','pendiente',20000.00,NULL),(9,1,1,'2025-06-20 15:33:30','pendiente',20000.00,NULL),(17,1,1,'2025-06-20 21:08:35','pendiente',0.00,NULL),(19,1,5,'2025-06-20 21:11:49','pendiente',20000.00,NULL),(20,1,2,'2025-06-20 21:17:42','pendiente',40000.00,NULL),(21,1,2,'2025-06-20 21:20:00','pendiente',60000.00,NULL),(22,1,2,'2025-06-20 21:24:49','pendiente',20000.00,NULL),(25,5,1,'2025-06-20 22:02:36','pendiente',20000.00,'otra vez'),(26,5,4,'2025-06-20 22:34:53','pendiente',40000.00,'cuarta'),(27,1,2,'2025-06-20 23:03:31','pendiente',40000.00,NULL),(28,1,2,'2025-06-20 23:05:38','pendiente',20000.00,NULL),(31,1,2,'2025-06-20 23:18:37','pendiente',20000.00,NULL);
 /*!40000 ALTER TABLE `pedidos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -274,7 +281,7 @@ CREATE TABLE `usuarios` (
   UNIQUE KEY `email` (`email`),
   KEY `rol_id` (`rol_id`),
   CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`rol_id`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -283,7 +290,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'Edinson','lache@hotmail.com','$2b$10$7irKCa/6qOE73Pd20UIm4eoVXXX7sIef2obe/Csj.M2i3aBCqe51y',2);
+INSERT INTO `usuarios` VALUES (1,'Edinson','lache@hotmail.com','$2b$10$B7DLwnGHHTp2KapTlXMSPe.vWrGM0/yic3RJuiHlvCU8BLFm5QVRe',3),(5,'yamir','lache08@hotmail.com','$2b$10$TmOHMdbhTwPNbfScdy39V.irlF7Wnhdl9oDj1z0YVnyypbeNM4Ty.',1),(9,'yael','lache081015@hotmail.com','$2b$10$hRkPVc8anu1eWzxxheUb6.sj4pbn55kbMN51err0yCEaF8P84RfV.',2);
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -296,4 +303,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-07 18:48:04
+-- Dump completed on 2025-06-21 10:33:39
