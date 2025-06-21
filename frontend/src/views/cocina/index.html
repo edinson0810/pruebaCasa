@@ -1,9 +1,17 @@
-<div class="container mt-4">
-    <h1 class="mb-4 text-center">Panel de Cocina</h1>
+<link rel="stylesheet" href="/src/css/cocina.css">
 
-    <div class="d-flex justify-content-between mb-4">
-        <button id="volverDashboardBtn" class="btn btn-secondary">Volver al Dashboard</button>
-        <button id="refreshPedidosBtn" class="btn btn-info">Actualizar Pedidos</button>
+<div id="cocina-view" class="container mt-4">
+    <h2 class="mb-4">Panel de Cocina</h2>
+
+    <div class="row mb-4">
+        <div class="col-12 text-end">
+            <button id="refreshPedidosBtn" class="btn btn-info me-2">
+                <i class="fas fa-sync-alt"></i> Actualizar Pedidos
+            </button>
+            <button id="volverDashboardBtnCocina" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver al Dashboard
+            </button>
+        </div>
     </div>
 
     <div class="row">
@@ -11,26 +19,24 @@
             <div class="card bg-warning text-white mb-3">
                 <div class="card-header">Pedidos Pendientes</div>
                 <div class="card-body" id="pedidosPendientesContainer">
-                    <p class="text-center text-dark">No hay pedidos pendientes.</p>
-                    </div>
+                    <p class="text-center text-secondary-emphasis">Cargando pedidos...</p>
+                </div>
             </div>
         </div>
-
         <div class="col-md-4">
             <div class="card bg-primary text-white mb-3">
-                <div class="card-header">Pedidos en Preparación</div>
+                <div class="card-header">En Preparación</div>
                 <div class="card-body" id="pedidosEnPreparacionContainer">
-                    <p class="text-center">No hay pedidos en preparación.</p>
-                    </div>
+                    <p class="text-center text-secondary-emphasis">Cargando pedidos...</p>
+                </div>
             </div>
         </div>
-
         <div class="col-md-4">
             <div class="card bg-success text-white mb-3">
                 <div class="card-header">Pedidos Listos</div>
                 <div class="card-body" id="pedidosListosContainer">
-                    <p class="text-center">No hay pedidos listos.</p>
-                    </div>
+                    <p class="text-center text-secondary-emphasis">Cargando pedidos...</p>
+                </div>
             </div>
         </div>
     </div>

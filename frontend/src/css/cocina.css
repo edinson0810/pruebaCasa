@@ -1,0 +1,225 @@
+/* src/assets/css/cocina.css */
+
+/* Estilos generales para el cuerpo y contenedores */
+body {
+    background-color: #f8f9fa; /* Un gris claro para el fondo */
+    color: #343a40; /* Color de texto oscuro por defecto */
+}
+
+.container {
+    max-width: 1200px; /* Limita el ancho máximo del contenido */
+    margin-top: 2rem; /* Espacio superior */
+    margin-bottom: 2rem; /* Espacio inferior */
+}
+
+h1 {
+    color: #212529; /* Un color de título más oscuro */
+    margin-bottom: 1.5rem;
+    font-weight: 600; /* Un poco más de peso para el título */
+}
+
+/* Estilos para los botones de la cabecera */
+.d-flex.justify-content-between.mb-4 button {
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem; /* Bordes ligeramente redondeados */
+    transition: all 0.3s ease; /* Transición suave para efectos hover */
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: white; /* Asegura que el texto sea blanco */
+}
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+}
+
+/* Estilos para las tarjetas de pedido */
+.card {
+    border-radius: 0.75rem; /* Bordes más redondeados para las tarjetas */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil para profundidad */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transición para efecto hover */
+    overflow: hidden; /* Asegura que el contenido no sobresalga de los bordes redondeados */
+}
+
+.card:hover {
+    transform: translateY(-3px); /* Pequeño levantamiento al pasar el mouse */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra un poco más pronunciada */
+}
+
+.card-header {
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125); /* Separador para el header */
+    border-top-left-radius: 0.75rem; /* Redondea las esquinas del header */
+    border-top-right-radius: 0.75rem;
+}
+
+/* Colores específicos para los headers de las tarjetas según el estado */
+.card.bg-warning .card-header {
+    background-color: #ffc107; /* Amarillo de Bootstrap */
+    color: #343a40; /* Texto oscuro para el amarillo */
+}
+.card.bg-primary .card-header {
+    background-color: #007bff; /* Azul de Bootstrap */
+    color: white;
+}
+.card.bg-success .card-header {
+    background-color: #28a745; /* Verde de Bootstrap */
+    color: white;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+/* Estilos para los mensajes de "No hay pedidos" */
+.card-body p.text-center.text-dark,
+.card-body p.text-center.text-secondary-emphasis {
+    font-style: italic;
+    color: #6c757d; /* Un gris más suave para estos mensajes */
+    padding: 1rem;
+}
+
+/* Estilos para las tarjetas individuales de pedido dentro de los contenedores */
+.pedido-card {
+    border: 1px solid #dee2e6; /* Borde más suave para tarjetas internas */
+    box-shadow: none; /* Eliminar sombra para tarjetas internas */
+    margin-bottom: 1rem; /* Espacio entre tarjetas */
+}
+
+.pedido-card .card-body {
+    background-color: #ffffff; /* Fondo blanco para el cuerpo de la tarjeta de pedido */
+    border-radius: 0.5rem; /* Bordes redondeados para el cuerpo de la tarjeta interna */
+    padding: 1rem;
+}
+
+.pedido-card .card-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #007bff; /* Color primario para el título del pedido */
+}
+
+.pedido-card .card-text {
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+.pedido-card ul {
+    margin-top: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-left: 1.25rem; /* Indentación para la lista de ítems */
+}
+
+.pedido-card ul li {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: #495057;
+}
+
+.pedido-card .update-status-btn {
+    width: 100%; /* Botón de estado ocupa todo el ancho de la tarjeta interna */
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.25rem;
+    margin-top: 0.75rem;
+}
+
+/* Colores de los botones de actualización de estado */
+.pedido-card .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+.pedido-card .btn-primary:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
+
+.pedido-card .btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+.pedido-card .btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.pedido-card .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+.pedido-card .btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Media Queries para responsividad */
+@media (max-width: 992px) {
+    .col-md-4 {
+        margin-bottom: 1.5rem; /* Espacio entre columnas en pantallas medianas */
+    }
+}
+
+@media (max-width: 768px) {
+    .col-md-4 {
+        flex: 0 0 100%; /* Cada columna ocupa el 100% del ancho */
+        max-width: 100%;
+        margin-bottom: 1.5rem;
+    }
+    .card {
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+    }
+    h1 {
+        font-size: 1.75rem; /* Reduce el tamaño del título principal en móviles */
+    }
+    .d-flex.justify-content-between {
+        flex-direction: column; /* Apila los botones verticalmente */
+        align-items: center;
+    }
+    .d-flex.justify-content-between button {
+        width: 80%; /* Los botones ocupan más ancho */
+        margin-bottom: 0.75rem; /* Espacio entre los botones apilados */
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    .d-flex.justify-content-between button {
+        width: 95%; /* Casi el ancho completo en pantallas muy pequeñas */
+    }
+    .card-body {
+        padding: 1rem;
+    }
+    .pedido-card .card-body {
+        padding: 0.75rem;
+    }
+    .pedido-card .card-title {
+        font-size: 1rem;
+    }
+    .pedido-card .card-text,
+    .pedido-card ul li {
+        font-size: 0.8rem;
+    }
+}
+
+/* Pequeñas mejoras de accesibilidad/UX */
+button:focus, a:focus {
+    outline: 2px solid #0056b3; /* Resaltado claro al enfocar elementos interactivos */
+    outline-offset: 2px;
+}
