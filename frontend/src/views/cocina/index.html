@@ -1,0 +1,37 @@
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">Panel de Cocina</h1>
+
+    <div class="d-flex justify-content-between mb-4">
+        <button id="volverDashboardBtn" class="btn btn-secondary">Volver al Dashboard</button>
+        <button id="refreshPedidosBtn" class="btn btn-info">Actualizar Pedidos</button>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card bg-warning text-white mb-3">
+                <div class="card-header">Pedidos Pendientes</div>
+                <div class="card-body" id="pedidosPendientesContainer">
+                    <p class="text-center text-dark">No hay pedidos pendientes.</p>
+                    </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-primary text-white mb-3">
+                <div class="card-header">Pedidos en Preparación</div>
+                <div class="card-body" id="pedidosEnPreparacionContainer">
+                    <p class="text-center">No hay pedidos en preparación.</p>
+                    </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-success text-white mb-3">
+                <div class="card-header">Pedidos Listos</div>
+                <div class="card-body" id="pedidosListosContainer">
+                    <p class="text-center">No hay pedidos listos.</p>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
