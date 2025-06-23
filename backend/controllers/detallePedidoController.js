@@ -1,61 +1,69 @@
-import db from '../database.js';
+// src/controllers/detallePedidoController.js
+import db from '../database.js'; 
 
-// Obtener todos los detalles
-export const obtenerDetalles = (req, res) => {
-  db.query('SELECT * FROM detalle_pedido', (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
-};
+export const obtenerPedidosListos = async (req, res) => { // ¡Añadimos 'async' aquí!
+    const query = `
+        SELECT
+            p.id AS pedido_id,
+            p.usuario_id,
+            p.mesa_id,
+            p.fecha_pedido,
+            p.estado,
+            p.total,
+            p.observaciones,
+            u.nombre AS usuario, 
+            GROUP_CONCAT(
+                JSON_OBJECT(
+                    'menu_id', dpd.menu_id,
+                    'cantidad', dpd.cantidad,
+                    'precio_unitario', dpd.precio_unitario,
+                    'menu_item_nombre', m.nombre
+                )
+                ORDER BY dpd.menu_id
+                SEPARATOR '|||'
+            ) AS items_json
+        FROM
+            pedidos p
+        JOIN
+            detalle_pedido dpd ON p.id = dpd.pedido_id
+        JOIN
+            menu m ON dpd.menu_id = m.id
+        JOIN
+            usuarios u ON p.usuario_id = u.id
+        WHERE
+            p.estado = 'listo'
+        GROUP BY
+            p.id, p.usuario_id, p.mesa_id, p.fecha_pedido, p.estado, p.total, p.observaciones, u.nombre
+        ORDER BY
+            p.fecha_pedido ASC;
+    `;
 
-// Obtener detalles por pedido_id
-export const obtenerDetallesPorPedido = (req, res) => {
-  const { pedido_id } = req.params;
-  db.query('SELECT * FROM detalle_pedido WHERE pedido_id = ?', [pedido_id], (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
-};
+    try { // Usamos 'try/catch' para manejar errores de la promesa
+        const [pedidosRows] = await db.query(query); // ¡Cambiamos a 'await' y desestructuramos!
 
-// Crear un nuevo detalle
-export const crearDetalle = (req, res) => {
-  const { pedido_id, menu_id, cantidad, precio_unitario } = req.body;
+        // Formatea los resultados (esta parte está bien)
+        const pedidosFormateados = pedidosRows.map(row => {
+            const items = row.items_json ?
+                row.items_json.split('|||').map(itemStr => JSON.parse(itemStr)) :
+                [];
+            return {
+                pedido_id: row.pedido_id,
+                usuario_id: row.usuario_id,
+                usuario: row.usuario,
+                mesa_id: row.mesa_id,
+                fecha_pedido: row.fecha_pedido,
+                estado: row.estado,
+                total: row.total,
+                observaciones: row.observaciones,
+                items: items
+            };
+        });
 
-  if (!pedido_id || !menu_id || !cantidad || !precio_unitario) {
-    return res.status(400).json({ message: 'Todos los campos son obligatorios' });
-  }
-
-  db.query(
-    'INSERT INTO detalle_pedido (pedido_id, menu_id, cantidad, precio_unitario) VALUES (?, ?, ?, ?)',
-    [pedido_id, menu_id, cantidad, precio_unitario],
-    (err, result) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.status(201).json({ message: 'Detalle registrado', id: result.insertId });
+        res.json(pedidosFormateados);
+    } catch (err) { // Capturamos el error de la promesa
+        console.error("Error al obtener pedidos listos:", err);
+        return res.status(500).json({ message: "Error interno del servidor al obtener pedidos listos.", error: err.message });
     }
-  );
 };
 
-// Actualizar detalle
-export const actualizarDetalle = (req, res) => {
-  const { id } = req.params;
-  const { pedido_id, menu_id, cantidad, precio_unitario } = req.body;
-
-  db.query(
-    'UPDATE detalle_pedido SET pedido_id = ?, menu_id = ?, cantidad = ?, precio_unitario = ? WHERE id = ?',
-    [pedido_id, producto_id, cantidad, precio_unitario, id],
-    (err) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ message: 'Detalle actualizado' });
-    }
-  );
-};
-
-// Eliminar detalle
-export const eliminarDetalle = (req, res) => {
-  const { id } = req.params;
-
-  db.query('DELETE FROM detalle_pedido WHERE id = ?', [id], (err) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: 'Detalle eliminado' });
-  });
-};
+// ... (otras funciones si las tienes en este controlador) ...
