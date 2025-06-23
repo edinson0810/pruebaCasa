@@ -3,7 +3,7 @@ import { obtenerPedidosPendientes, marcarPedidoListo } from '../controllers/coci
 
 const router = express.Router();
 
-router.get('/pendientes', obtenerPedidosPendientes);
-router.put('/marcar-listo/:pedido_id', marcarPedidoListo);
+router.get('/pendientes-cocina', obtenerPedidosPendientes);
+router.put('/:pedido_id/estado', marcarPedidoListo);
 
 export default router;
