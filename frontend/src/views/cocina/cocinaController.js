@@ -1,11 +1,8 @@
 // src/views/cocina/cocinaController.js
-
 const API_BASE_URL = 'http://localhost:3000/api';
 
 // Elementos del DOM (declarados globalmente pero asignados en setupCocinaController)
 let pedidosPendientesContainer;
-let pedidosEnPreparacionContainer;
-let pedidosListosContainer;
 let refreshPedidosBtn;
 let volverDashboardBtn;
 
@@ -15,13 +12,12 @@ export const setupCocinaController = () => {
 
     // *** PASO CRÍTICO: Asignación de elementos del DOM ***
     pedidosPendientesContainer = document.getElementById('pedidosPendientesContainer');
-    pedidosEnPreparacionContainer = document.getElementById('pedidosEnPreparacionContainer');
-    pedidosListosContainer = document.getElementById('pedidosListosContainer');
     refreshPedidosBtn = document.getElementById('refreshPedidosBtn');
     volverDashboardBtn = document.getElementById('volverDashboardBtnCocina');
 
     // *** VERIFICACIÓN DE ELEMENTOS CRÍTICOS ***
-    if (!pedidosPendientesContainer || !pedidosEnPreparacionContainer || !pedidosListosContainer || !refreshPedidosBtn || !volverDashboardBtn) {
+    // Solo verificar el contenedor de pendientes y los botones
+    if (!pedidosPendientesContainer || !refreshPedidosBtn || !volverDashboardBtn) {
         console.error("ERROR CRÍTICO: Uno o más elementos esenciales de la vista de Cocina no se encontraron en el DOM.");
         console.error("Por favor, verifique que los IDs en 'src/views/cocina/index.html' sean correctos y que la página se cargue completamente.");
         return;
@@ -30,8 +26,6 @@ export const setupCocinaController = () => {
     // Configuración de Event Listeners
     refreshPedidosBtn.addEventListener('click', fetchAndDisplayPedidos);
     pedidosPendientesContainer.addEventListener('click', handlePedidoAction);
-    pedidosEnPreparacionContainer.addEventListener('click', handlePedidoAction);
-    pedidosListosContainer.addEventListener('click', handlePedidoAction);
 
     volverDashboardBtn.addEventListener('click', () => {
         if (window.router && typeof window.router.navigate === 'function') {
@@ -42,133 +36,120 @@ export const setupCocinaController = () => {
         }
     });
 
-    fetchAndDisplayPedidos();
+    fetchAndDisplayPedidos(); // Cargar los pedidos al iniciar la vista
 };
 
-// Función de desmontaje del controlador
+// Función de desmontaje del controlador (para limpiar listeners si la vista se descarga)
 export const teardownCocinaController = () => {
     console.log("-> teardownCocinaController: Desmontando listeners del módulo de cocina.");
     if (refreshPedidosBtn) refreshPedidosBtn.removeEventListener('click', fetchAndDisplayPedidos);
+    // Para el botón de volver, una forma robusta de quitar el listener y asegurar que no haya duplicados
     if (volverDashboardBtn && volverDashboardBtn.parentNode) {
         const oldBtn = volverDashboardBtn;
-        volverDashboardBtn = oldBtn.cloneNode(true);
-        oldBtn.parentNode.replaceChild(volverDashboardBtn, oldBtn);
+        volverDashboardBtn = oldBtn.cloneNode(true); // Clona el nodo para eliminar todos los listeners
+        oldBtn.parentNode.replaceChild(volverDashboardBtn, oldBtn); // Reemplaza el nodo antiguo por el clon
     }
     if (pedidosPendientesContainer) pedidosPendientesContainer.removeEventListener('click', handlePedidoAction);
-    if (pedidosEnPreparacionContainer) pedidosEnPreparacionContainer.removeEventListener('click', handlePedidoAction);
-    if (pedidosListosContainer) pedidosListosContainer.removeEventListener('click', handlePedidoAction);
 
+    // Nulificar las referencias para liberar memoria
     pedidosPendientesContainer = null;
-    pedidosEnPreparacionContainer = null;
-    pedidosListosContainer = null;
     refreshPedidosBtn = null;
     volverDashboardBtn = null;
 };
 
 // =========================================================================
-// Funciones de Lógica de Negocio
+// Funciones de Lógica de Negocio (Frontend)
 // =========================================================================
 
 async function fetchAndDisplayPedidos() {
     try {
-        const response = await fetch(`${API_BASE_URL}/pedidos`);
+        // Llama a la API del backend para obtener solo los pedidos pendientes de cocina
+        // Esta URL DEBE COINCIDIR con la ruta GET en src/routes/cocinaRoutes.js
+        const response = await fetch(`${API_BASE_URL}/cocina/pendientes-cocina`);
         if (!response.ok) {
-            throw new Error(`Error al cargar los pedidos: ${response.statusText}`);
+            const errorBody = await response.json().catch(() => ({})); // Intenta parsear el error del servidor
+            const errorMessage = errorBody.message || response.statusText || 'Error desconocido';
+            throw new Error(`Error al cargar los pedidos: ${errorMessage}`);
         }
         const pedidos = await response.json();
-        // console.log("Pedidos recibidos:", pedidos);
-        renderPedidos(pedidos);
+        // console.log("Pedidos recibidos:", pedidos); // Puedes descomentar para depurar
+        renderPedidos(pedidos); // Renderizar los pedidos en la única columna
     } catch (error) {
-        console.error('Error al obtener y mostrar pedidos:', error);
+        console.error('Error al obtener y mostrar pedidos pendientes:', error);
         alert('No se pudieron cargar los pedidos: ' + error.message);
     }
 }
 
+// Función para renderizar los pedidos en la única columna
 function renderPedidos(pedidos) {
-    if (!pedidosPendientesContainer || !pedidosEnPreparacionContainer || !pedidosListosContainer) {
-        console.error("Contenedores de pedidos no encontrados para renderizar. Esto debería haberse evitado en el setup.");
+    if (!pedidosPendientesContainer) {
+        console.error("Contenedor de pedidos pendientes no encontrado para renderizar.");
         return;
     }
 
-    pedidosPendientesContainer.innerHTML = '';
-    pedidosEnPreparacionContainer.innerHTML = '';
-    pedidosListosContainer.innerHTML = '';
+    pedidosPendientesContainer.innerHTML = ''; // Limpiar el contenido existente
 
-    const noPedidosMsg = (text) => `<p class="text-center text-secondary-emphasis">${text}</p>`;
+    const noPedidosMsg = (text) => `<p class="text-center text-secondary-emphasis mt-3">${text}</p>`;
 
-    let hasPendientes = false;
-    let hasEnPreparacion = false;
-    let hasListos = false;
-
-    pedidos.forEach(pedido => {
-        const pedidoCard = createPedidoCard(pedido);
-        if (pedido.estado === 'pendiente') {
-            pedidosPendientesContainer.appendChild(pedidoCard);
-            hasPendientes = true;
-        } else if (pedido.estado === 'en_preparacion') {
-            pedidosEnPreparacionContainer.appendChild(pedidoCard);
-            hasEnPreparacion = true;
-        } else if (pedido.estado === 'listo') {
-            pedidosListosContainer.appendChild(pedidoCard);
-            hasListos = true;
+    if (pedidos.length === 0) {
+        pedidosPendientesContainer.innerHTML = noPedidosMsg('No hay pedidos pendientes.');
+    } else {
+        pedidos.forEach(pedido => {
+            // Asegurarse de que solo se rendericen pedidos pendientes
+            if (pedido.estado === 'pendiente') {
+                const pedidoCard = createPedidoCard(pedido);
+                pedidosPendientesContainer.appendChild(pedidoCard);
+            }
+        });
+        // Si después del filtro no hay pendientes (por si acaso), mostrar mensaje
+        if (pedidosPendientesContainer.innerHTML === '') {
+            pedidosPendientesContainer.innerHTML = noPedidosMsg('No hay pedidos pendientes.');
         }
-    });
-
-    if (!hasPendientes) pedidosPendientesContainer.innerHTML = noPedidosMsg('No hay pedidos pendientes.');
-    if (!hasEnPreparacion) pedidosEnPreparacionContainer.innerHTML = noPedidosMsg('No hay pedidos en preparación.');
-    if (!hasListos) pedidosListosContainer.innerHTML = noPedidosMsg('No hay pedidos listos.');
+    }
 }
 
+// Función para crear la tarjeta de un pedido
 function createPedidoCard(pedido) {
     const card = document.createElement('div');
-    card.classList.add('card', 'mb-2', 'pedido-card');
-    card.dataset.pedidoId = pedido.id;
+    card.classList.add('card', 'mb-2', 'pedido-card'); // Clases de Bootstrap
+    card.dataset.pedidoId = pedido.pedido_id; // Guardar el ID del pedido en el dataset del elemento
 
-    let estadoClaseBoton = '';
-    let textoBoton = '';
-    let siguienteEstado = '';
+    // Lógica del botón: solo para pedidos pendientes, el botón marcará como "listo"
+    let estadoClaseBoton = 'btn-primary'; // Botón azul primario (Bootstrap)
+    let textoBoton = 'Marcar como Listo';
+    let siguienteEstado = 'listo';
 
-    if (pedido.estado === 'pendiente') {
-        estadoClaseBoton = 'btn-warning';
-        textoBoton = 'Empezar Preparación';
-        siguienteEstado = 'en_preparacion';
-    } else if (pedido.estado === 'en_preparacion') {
-        estadoClaseBoton = 'btn-primary';
-        textoBoton = 'Marcar como Listo';
-        siguienteEstado = 'listo';
-    } else if (pedido.estado === 'listo') {
-        estadoClaseBoton = 'btn-success';
-        textoBoton = 'Marcar como Entregado';
-        siguienteEstado = 'entregado';
-    }
-
-    // --- CORRECCIÓN AQUÍ: Asegúrate de que pedido.items sea un array antes de usar map ---
+    // Asegúrate de que pedido.items sea un array antes de usar map, para evitar errores
     const itemsHtml = (pedido.items || []).map(item => `
         <li>${item.cantidad} x ${item.menu_item_nombre || 'Producto Desconocido'} ($${parseFloat(item.precio_unitario || 0).toFixed(2)})</li>
     `).join('');
 
     card.innerHTML = `
         <div class="card-body bg-light text-dark">
-            <h5 class="card-title">Pedido #${pedido.id} - Mesa: ${pedido.mesa_id}</h5>
-            <p class="card-text">Usuario: ${pedido.usuario_id}</p>
+            <h5 class="card-title">Pedido #${pedido.pedido_id} - Mesa: ${pedido.mesa_id}</h5>
+            <p class="card-text">Usuario: ${pedido.usuario || 'Desconocido'}</p>
             <ul class="list-unstyled small">
                 ${itemsHtml}
             </ul>
             ${pedido.observaciones ? `<p class="card-text small"><strong>Obs:</strong> ${pedido.observaciones}</p>` : ''}
-            <p class="card-text mt-2"><strong>Total:</strong> $${parseFloat(pedido.total).toFixed(2)}</p>
-            <button class="btn ${estadoClaseBoton} btn-sm mt-2 update-status-btn"
-                    data-pedido-id="${pedido.id}"
-                    data-current-status="${pedido.estado}"
-                    data-next-status="${siguienteEstado}">
-                ${textoBoton}
-            </button>
+            <p class="card-text mt-2"><strong>Total:</strong> $${parseFloat(pedido.total || 0).toFixed(2)}</p>
+            ${pedido.estado === 'pendiente' ? `
+                <button class="btn ${estadoClaseBoton} btn-sm mt-2 update-status-btn"
+                        data-pedido-id="${pedido.pedido_id}"
+                        data-current-status="${pedido.estado}"
+                        data-next-status="${siguienteEstado}">
+                    ${textoBoton}
+                </button>
+            ` : `<p class="text-secondary mt-2">Estado: ${pedido.estado.replace('_', ' ').charAt(0).toUpperCase() + pedido.estado.replace('_', ' ').slice(1)}</p>`}
         </div>
     `;
     return card;
 }
 
+// Manejador de eventos para las acciones de los pedidos (solo actualizar estado)
 async function handlePedidoAction(event) {
     const target = event.target;
+    // Solo actuamos si se hizo clic en un botón con la clase 'update-status-btn'
     if (target.classList.contains('update-status-btn')) {
         const pedidoId = target.dataset.pedidoId;
         const currentStatus = target.dataset.currentStatus;
@@ -185,9 +166,11 @@ async function handlePedidoAction(event) {
     }
 }
 
+// Función para enviar la actualización del estado del pedido al backend
 async function updatePedidoStatus(pedidoId, newStatus) {
     try {
-        const response = await fetch(`${API_BASE_URL}/pedidos/${pedidoId}/`, {
+        // La URL de la API DEBE COINCIDIR con la ruta PUT en src/routes/cocinaRoutes.js
+        const response = await fetch(`${API_BASE_URL}/cocina/${pedidoId}/estado`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -196,14 +179,14 @@ async function updatePedidoStatus(pedidoId, newStatus) {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
+            const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.message || 'Error al actualizar el estado del pedido en el servidor.');
         }
 
         const result = await response.json();
         console.log(`Pedido ${pedidoId} actualizado a "${newStatus}":`, result.message);
         alert(`Pedido #${pedidoId} actualizado a "${newStatus.replace('_', ' ')}".`);
-        fetchAndDisplayPedidos();
+        fetchAndDisplayPedidos(); // Refrescar la lista de pedidos pendientes después de la actualización
     } catch (error) {
         console.error('Error en el frontend al actualizar el estado del pedido:', error);
         alert(`Error al actualizar el estado del pedido: ${error.message}`);
