@@ -1,0 +1,244 @@
+body {
+    font-family: 'Poppins', sans-serif; /* Fuente moderna y legible. ¡Asegúrate de importarla en tu index.html! */
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); /* Degradado de fondo vibrante */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center; /* Centra horizontalmente el contenido del body */
+    align-items: center; /* Centra verticalmente el contenido principal. Ajusta a flex-start si prefieres alinear arriba. */
+    color: #333; /* Color de texto base */
+}
+
+.container {
+    max-width: 1050px; /* Un poco más de ancho para albergar las tarjetas */
+    width: 95%; /* Ocupa casi todo el ancho disponible */
+    margin: 40px auto; /* Márgenes ajustados */
+    background-color: rgba(255, 255, 255, 0.95); /* Fondo blanco semitransparente para un efecto "glassmorphism" */
+    padding: 35px;
+    border-radius: 18px; /* Bordes más redondeados */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada y vibrante */
+    backdrop-filter: blur(5px); /* Efecto de desenfoque al fondo (para glassmorphism) */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Borde sutil del "cristal" */
+    display: block; /* Mantenemos display: block para que ocupe todo el ancho disponible y no flex */
+    overflow-x: hidden; /* Oculta barras de desplazamiento horizontales si hay desbordamiento */
+}
+
+h1 {
+    color: #6a1b9a; /* Púrpura intenso para el título principal */
+    text-align: center;
+    margin-bottom: 45px;
+    font-size: 3.2em; /* Título grande y llamativo */
+    font-weight: 900; /* Extra-negrita */
+    letter-spacing: 1.5px;
+    text-transform: uppercase; /* Todo en mayúsculas */
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.1); /* Sombra más marcada en el texto */
+    background: linear-gradient(45deg, #ff6b6b, #ffe66b); /* Degradado en el texto */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: pulse 1.5s infinite alternate; /* Animación de pulsación sutil */
+}
+
+/* Animación para el título */
+@keyframes pulse {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.02);
+    }
+}
+
+.pedidos-list {
+    display: grid; /* Habilita CSS Grid para la disposición de las tarjetas */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Mantenemos tu valor 280px para asegurar horizontalidad */
+    gap: 25px; /* Espacio generoso entre tarjetas (ajustado de 20px) */
+    padding: 0;
+    margin: 0;
+    justify-content: center; /* Centra las tarjetas si la última fila no está llena */
+    align-items: stretch; /* Asegura que las tarjetas tengan la misma altura */
+}
+
+.pedido-card {
+    background-color: #ffffff; /* Fondo blanco puro para la tarjeta */
+    border: none; /* Quitamos el borde para un look más limpio */
+    border-radius: 15px; /* Bordes bien redondeados */
+    padding: 25px; /* Más padding interno en las tarjetas */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); /* Sombra más definida */
+    display: flex; /* Habilita Flexbox dentro de cada tarjeta */
+    flex-direction: column; /* Organiza los elementos de la tarjeta en una columna */
+    justify-content: space-between; /* Empuja el primer elemento (título) arriba y el último (botón) abajo */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Transición suave para hover */
+    border-top: 5px solid #20e3b2; /* Acento de color superior vibrante */
+}
+
+.pedido-card:hover {
+    transform: translateY(-10px); /* Efecto de "flotar" más pronunciado */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25); /* Sombra intensa al pasar el mouse */
+}
+
+.pedido-card h3 {
+    margin-top: 0;
+    color: #007bff; /* Azul brillante para los títulos de pedido */
+    font-size: 1.6em;
+    border-bottom: 2px solid #e0f2f7; /* Línea divisoria suave */
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    font-weight: 700;
+    word-wrap: break-word;
+}
+
+.pedido-card p {
+    margin: 10px 0; /* Más espacio vertical para los párrafos */
+    color: #444;
+    font-size: 1.05em;
+    line-height: 1.6; /* Más espacio entre líneas */
+    word-wrap: break-word;
+}
+
+.pedido-card p strong {
+    color: #222;
+    font-weight: 600;
+}
+
+/* Estilos específicos para los spans de "Estado" y "Total" */
+.pedido-card p span {
+    font-weight: 700; /* Texto más audaz por defecto */
+    display: inline-block; /* Para aplicar padding y margin correctamente */
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-left: 5px; /* Un pequeño margen para separar del texto anterior */
+}
+
+/* Color para el texto de estado 'LISTO' que viene con estilo inline="color: blue;" */
+.pedido-card p span[style*="blue"] {
+    background-color: #c8e6c9; /* Fondo verde claro */
+    color: #28a745 !important; /* Verde vibrante */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Color para el texto del 'Total' que viene con estilo inline="color: green;" */
+.pedido-card p span[style*="green"] {
+    background-color: #ffccbc; /* Fondo naranja claro */
+    color: #ff5722 !important; /* Naranja rojizo vibrante */
+    font-size: 1.3em;
+    padding: 5px 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.pedido-card .items-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    border-top: 1px solid #c5e1a5; /* Borde superior sólido verde */
+    padding-top: 15px;
+    max-height: 160px; /* Altura máxima para la lista de ítems */
+    overflow-y: auto; /* Añade scroll si el contenido de la lista excede max-height */
+    word-wrap: break-word;
+    background-color: #f1f8e9; /* Fondo verde muy claro para la lista */
+    border-radius: 8px;
+    padding: 10px 15px;
+    box-shadow: inset 0 1px 4px rgba(0,0,0,0.05); /* Sombra interna sutil */
+}
+
+.pedido-card .items-list li {
+    background-color: #e8f5e9; /* Fondo más claro para cada ítem de lista */
+    margin-bottom: 8px;
+    padding: 10px 15px;
+    border-radius: 8px; /* Bordes más redondeados */
+    font-size: 0.95em;
+    color: #4CAF50; /* Texto verde para los ítems */
+    border: 1px solid #c8e6c9; /* Borde verde suave */
+    word-wrap: break-word;
+    font-weight: 600;
+}
+
+.pedido-card button {
+    background: linear-gradient(45deg, #4CAF50, #8bc34a); /* Degradado verde vibrante */
+    color: white;
+    border: none;
+    padding: 16px 28px; /* Botón más grande */
+    border-radius: 10px; /* Bordes muy redondeados */
+    cursor: pointer;
+    font-size: 1.25em; /* Texto del botón más grande */
+    font-weight: bold;
+    margin-top: 30px;
+    width: 100%; /* El botón ocupa todo el ancho de la tarjeta */
+    margin-top: auto; /* Empuja el botón al final del flex container */
+    flex-shrink: 0; /* Asegura que el botón no se encoja */
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Sombra para el botón */
+}
+
+.pedido-card button:hover {
+    background: linear-gradient(45deg, #66bb6a, #9ccc65); /* Degradado más claro en hover */
+    transform: translateY(-5px); /* Efecto de "levantar" al pasar el mouse */
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25); /* Sombra más fuerte en hover */
+}
+
+.pedido-card button:active {
+    transform: translateY(0); /* Efecto de "presionar" */
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.no-pedidos {
+    text-align: center;
+    color: #a0a0a0;
+    padding: 50px;
+    grid-column: 1 / -1; /* Hace que el mensaje ocupe todas las columnas del grid */
+    font-style: italic;
+    font-size: 1.2em;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+/* Media Queries para Responsividad */
+@media (max-width: 992px) {
+    .container {
+        max-width: 90%;
+        padding: 30px;
+    }
+    h1 {
+        font-size: 2.8em;
+    }
+    .pedidos-list {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Mantener horizontalidad */
+        gap: 25px;
+    }
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.2em;
+        margin-bottom: 35px;
+    }
+    .pedido-card {
+        padding: 20px;
+    }
+    .pedido-card h3 {
+        font-size: 1.4em;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        margin: 20px 10px;
+        padding: 25px;
+    }
+    h1 {
+        font-size: 1.8em;
+        margin-bottom: 25px;
+    }
+    .pedidos-list {
+        grid-template-columns: 1fr; /* Una sola columna en móviles */
+        gap: 20px;
+    }
+    .pedido-card {
+        padding: 20px;
+    }
+    .pedido-card button {
+        padding: 14px 20px;
+        font-size: 1.1em;
+    }
+}

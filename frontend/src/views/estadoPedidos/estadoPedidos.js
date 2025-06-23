@@ -61,7 +61,7 @@ async function fetchAndDisplayPedidosListos() {
     try {
         // Llama a la API del backend para obtener solo los pedidos con estado 'listo'
         // Esta URL DEBE COINCIDIR con la ruta GET que crearemos en el backend (ej. /api/pedidos/listos)
-        const response = await fetch(`${API_BASE_URL}/pedidos/listos`); //
+       const response = await fetch(`${API_BASE_URL}/detalles/listos`); //
         if (!response.ok) {
             const errorBody = await response.json().catch(() => ({})); // Intenta parsear el error del servidor
             const errorMessage = errorBody.message || response.statusText || 'Error desconocido';
