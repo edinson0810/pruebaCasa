@@ -184,7 +184,7 @@ async function updatePedidoStatus(pedidoId, newStatus) {
         }
 
         const result = await response.json();
-        console.log(`Pedido ${pedidoId} actualizado a "${newStatus}":`, result.message);
+        // console.log(`Pedido ${pedidoId} actualizado a "${newStatus}":`, result.message);
         alert(`Pedido #${pedidoId} actualizado a "${newStatus.replace('_', ' ')}".`);
         fetchAndDisplayPedidos(); // Refrescar la lista de pedidos pendientes después de la actualización
     } catch (error) {

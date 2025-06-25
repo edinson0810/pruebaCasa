@@ -1,9 +1,26 @@
 // src/views/pagos/pagoController.js
-
 const API_BASE_URL = 'http://localhost:3000/api'; 
 
+// La función setupPagoController DEBE ser la que se exporta y se llama externamente.
+// No debe contener su propio DOMContentLoaded.
 export function setupPagoController() {
-    // console.log("Inicializando PagoController...");
+    // console.log("PagoController: setupPagoController ejecutándose.");
+
+    // INICIO: Funcionalidad para el botón "Volver al Dashboard"
+    const dashboardBtn = document.getElementById('dashboard-btn');
+    if (dashboardBtn) {
+        dashboardBtn.addEventListener('click', () => {
+            console.log("Botón 'Volver al Dashboard' clickeado. Navegando hacia atrás en el historial.");
+            window.history.back(); 
+        });
+    } else {
+        console.warn("Botón del Dashboard (#dashboard-btn) no encontrado en el DOM. Asegúrate de que el ID sea correcto en tu HTML.");
+    }
+    // FIN: Funcionalidad para el botón "Volver al Dashboard"
+
+    // La función principal de carga de pedidos se llama directamente desde aquí
+    // porque se asume que setupPagoController ya será llamado DESPUÉS del DOMContentLoaded
+    // en tu archivo de entrada principal (ej. main.js o un script en el HTML).
     fetchAndDisplayPedidosParaPagar(); 
 }
 
@@ -40,16 +57,13 @@ const fetchAndDisplayPedidosParaPagar = async () => {
                 <li>${item.cantidad} x ${item.menu_item_nombre} ($${item.precio_unitario})</li>
             `).join('');
 
-            // APLICAMOS LA CORRECCIÓN AQUÍ: Convertir pedido.total a un número
-            const totalNumerico = Number(pedido.total); // Convierte a número
-            if (isNaN(totalNumerico)) { // Si no es un número válido después de la conversión
+            const totalNumerico = Number(pedido.total);
+            if (isNaN(totalNumerico)) {
                 console.warn(`El total del pedido ${pedido.pedido_id} no es un número válido:`, pedido.total);
-                // Puedes optar por mostrar un valor por defecto o simplemente el original si no quieres que falle
                 pedido.total = 'N/A'; 
             } else {
-                pedido.total = totalNumerico; // Asigna el valor numérico de vuelta
+                pedido.total = totalNumerico;
             }
-
 
             pedidoCard.innerHTML = `
                 <h3>Pedido #${pedido.pedido_id} (Mesa: ${pedido.mesa_id})</h3>

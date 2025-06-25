@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Pagos y Reportes</title>
+    <link rel="stylesheet" href="./src/css/pagos.css"> 
+    <link rel="stylesheet" href="./src/css/reportes.css"> </head>
+<body>
+    <div id="app-container" class="app-container">
+        <div id="pagos-panel" class="panel">
+            <div class="container">
+                <div class="header-content">
+                    <button id="dashboard-btn" class="dashboard-button">Ir al Dashboard</button> 
+                    <h1>Panel de Procesamiento de Pagos</h1>
+                    <button id="show-reports-btn" class="dashboard-button reports-button">Ver Reportes</button>
+                </div>
+                <div id="pedidos-para-pagar" class="pedidos-list">
+                    </div>
+            </div>
+        </div>
+
+        <div id="reportes-panel" class="panel hidden">
+            <div class="container">
+                <div class="header-content">
+                    <button id="back-to-pagos-btn" class="dashboard-button">Volver a Dashboard</button> 
+                    <h1>Panel de Reportes</h1>
+                </div>
+
+                <div class="report-controls">
+                    <label for="report-type-select">Seleccionar Reporte:</label>
+                    <select id="report-type-select" class="payment-method-select">
+                        <option value="pedidos-pagados">Pedidos Pagados (Historial)</option>
+                        <option value="ventas-por-fecha">Ventas por Fecha</option>
+                    </select>
+
+                    <div class="date-range-selector">
+                        <label for="start-date">Desde:</label>
+                        <input type="date" id="start-date" class="date-input">
+                        <label for="end-date">Hasta:</label>
+                        <input type="date" id="end-date" class="date-input">
+                        <button id="generate-report-btn" class="report-button">Generar Reporte</button>
+                    </div>
+                </div>
+
+                <div id="report-output" class="report-output">
+                    <p class="no-report-selected">Selecciona un tipo de reporte y genera los datos.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./src/js/reportesPage.js"></script>
+</body>
+</html>

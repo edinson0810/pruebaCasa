@@ -1,0 +1,121 @@
+/* Estilos específicos para el panel de reportes */
+
+.report-controls {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+    gap: 15px; /* Espacio entre los elementos de control */
+    margin-bottom: 30px;
+    align-items: center;
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.report-controls label {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.95em;
+    white-space: nowrap; /* Evita que el label se rompa */
+}
+
+.report-controls select,
+.report-controls input[type="date"] {
+    flex-grow: 1; /* Permite que crezcan para ocupar el espacio */
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    color: #333;
+    background-color: #fff;
+    max-width: 250px; /* Ancho máximo para select e inputs de fecha */
+}
+
+.report-controls input[type="date"] {
+    -webkit-appearance: none; /* Elimina estilos por defecto en Webkit */
+    appearance: none;
+    cursor: pointer;
+}
+
+.report-controls select:focus,
+.report-controls input[type="date"]:focus {
+    outline: none;
+    border-color: #607d8b;
+    box-shadow: 0 0 0 2px rgba(96, 125, 139, 0.2);
+}
+
+.report-controls .report-button {
+    background-color: #3f51b5; /* Color del botón principal */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    flex-shrink: 0; /* Evita que el botón se encoja */
+}
+
+.report-controls .report-button:hover {
+    background-color: #303f9f; /* Un azul más oscuro al pasar el mouse */
+    transform: translateY(-2px);
+}
+
+.report-output {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    min-height: 200px; /* Para que siempre tenga un tamaño mínimo */
+}
+
+.report-output h2 {
+    color: #3f51b5;
+    font-size: 2em;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.report-output table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.report-output th, .report-output td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+    font-size: 0.95em;
+    color: #444;
+}
+
+.report-output th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+    color: #333;
+}
+
+.report-output tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.report-output tbody tr:hover {
+    background-color: #f0f0f0;
+}
+
+.no-report-selected, .no-data-message, .loading-message {
+    text-align: center;
+    color: #888;
+    padding: 30px;
+    font-style: italic;
+}
+
+.loading-message {
+    color: #3f51b5;
+    font-weight: 600;
+}

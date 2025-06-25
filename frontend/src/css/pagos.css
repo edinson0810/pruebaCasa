@@ -1,244 +1,452 @@
 body {
-    font-family: 'Poppins', sans-serif; /* Fuente moderna y legible. ¡Asegúrate de importarla en tu index.html! */
+    font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); /* Degradado de fondo vibrante */
+    background: linear-gradient(135deg, #f0f2f5 0%, #e0e5ec 100%); 
     min-height: 100vh;
     display: flex;
-    justify-content: center; /* Centra horizontalmente el contenido del body */
-    align-items: center; /* Centra verticalmente el contenido principal. Ajusta a flex-start si prefieres alinear arriba. */
-    color: #333; /* Color de texto base */
+    justify-content: center;
+    align-items: center; 
+    color: #333;
 }
 
 .container {
-    max-width: 1050px; /* Un poco más de ancho para albergar las tarjetas */
-    width: 95%; /* Ocupa casi todo el ancho disponible */
-    margin: 40px auto; /* Márgenes ajustados */
-    background-color: rgba(255, 255, 255, 0.95); /* Fondo blanco semitransparente para un efecto "glassmorphism" */
+    max-width: 1050px;
+    width: 95%;
+    margin: 40px auto;
+    background-color: #ffffff; 
     padding: 35px;
-    border-radius: 18px; /* Bordes más redondeados */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada y vibrante */
-    backdrop-filter: blur(5px); /* Efecto de desenfoque al fondo (para glassmorphism) */
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Borde sutil del "cristal" */
-    display: block; /* Mantenemos display: block para que ocupe todo el ancho disponible y no flex */
-    overflow-x: hidden; /* Oculta barras de desplazamiento horizontales si hay desbordamiento */
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); 
+    display: block; 
+    overflow-x: hidden;
 }
 
-h1 {
-    color: #6a1b9a; /* Púrpura intenso para el título principal */
+/* --- ESTILOS PARA LA CABECERA (Botón y Título) --- */
+.header-content {
+    display: flex;
+    justify-content: space-between; /* Distribuye el espacio: izquierda, centro (si hay item), derecha */
+    align-items: center;
+    width: 100%;
+    margin-bottom: 30px;
+    padding: 10px 0;
+    /* position: relative ya no es tan crítico aquí, pero se puede mantener si otras cosas lo necesitan */
+}
+
+/* Para centrar el h1 y tener el botón a la derecha, necesitamos que el h1
+   sea el elemento "central" en el flujo flex.
+   Si tu HTML es: <button> <h1>, entonces el h1 no se centrará automáticamente
+   con justify-content: space-between, ya que sería el segundo elemento.
+   
+   La clave es un HTML así: <div class="left-spacer"></div> <h1/> <button/>
+   O que el botón esté en un orden lógico que permita el centrado.
+   
+   Dadas tus imágenes, donde el botón aparece a la izquierda superior,
+   y quieres que vaya a la derecha y el h1 centrado, el HTML debería ser:
+   <div class="header-content">
+       <div class="header-placeholder"></div> <h1>Panel de Procesamiento de Pagos</h1>
+       <button id="dashboard-btn" class="dashboard-button">Ir al Dashboard</button> 
+   </div>
+*/
+
+/* Este h1 se comportará de forma más natural dentro del flexbox */
+.header-content h1 {
+    flex-grow: 1; /* Permite que el h1 ocupe el espacio disponible y empuje otros elementos */
+    text-align: center; /* Centra el texto dentro del h1 */
+    margin: 0; /* Elimina márgenes por defecto */
+    
+    /* Colores y estilos del h1 (ya menos vivos) */
+    color: #3f51b5; 
+    font-size: 2.8em; 
+    font-weight: 700; 
+    letter-spacing: 0.8px; 
+    text-transform: uppercase;
+    text-shadow: none; 
+    background: none; 
+    -webkit-background-clip: unset; 
+    -webkit-text-fill-color: inherit; 
+    animation: none; 
+}
+
+.dashboard-button {
+    /* El botón irá a la derecha por 'margin-left: auto;' */
+    margin-left: auto; /* Esto empuja el botón lo más a la derecha posible dentro de su contenedor flex. */
+    flex-shrink: 0; /* Asegura que el botón no se encoja */
+    
+    /* Tus estilos de botón ya suavizados */
+    background-color: #607d8b; 
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.dashboard-button:hover {
+    background-color: #455a64; 
+    transform: translateY(-2px); 
+}
+
+/* Este es un elemento opcional si quieres el H1 *exactamente* centrado
+   y el botón a la derecha, mientras el H1 no sea el primer elemento.
+   Si el botón es el primer elemento y luego el H1, H1 NO se centrará con justify-content: space-between.
+   Para eso, el H1 debe ser el elemento central con 2 elementos a los lados, o usar margin: auto.
+   
+   Si tu HTML es:
+   <div class="header-content">
+       <button id="dashboard-btn" class="dashboard-button">Ir al Dashboard</button> 
+       <h1>Panel de Procesamiento de Pagos</h1>
+   </div>
+   
+   Entonces, con `justify-content: space-between;`, el botón irá a la izquierda y el h1 a la derecha.
+   
+   Para lograr: [BOTÓN A LA DERECHA] y [TÍTULO CENTRADO], con ese HTML:
+   Necesitas que el botón y el h1 estén en el mismo nivel, y el botón se "separe".
+*/
+.header-content h1 {
+    /* Si el botón va primero en el HTML, y el h1 después,
+       y quieres que el h1 se centre EN TODO EL ANCHO disponible,
+       y el botón se vaya a la derecha.
+       El h1 necesita ocupar su espacio y empujar el botón. */
+    flex-basis: auto; /* Permite que el h1 determine su ancho */
+    flex-grow: 1; /* Permite que el h1 crezca y empuje */
+    text-align: center; /* Centra el texto dentro del h1 */
+    margin: 0 auto; /* Margenes automáticos para centrarlo si está solo */
+}
+
+/* La combinación es:
+   .header-content { display: flex; align-items: center; }
+   .dashboard-button { margin-left: auto; }
+   .header-content h1 { text-align: center; flex-grow: 1; }
+   
+   Con HTML: <div class="header-content"> <button> <h1> </div>
+   El botón se irá a la derecha (por margin-left:auto).
+   El h1 ocupará el espacio restante y se centrará dentro de ESE espacio restante.
+   Si el botón es muy ancho, el h1 no estará perfectamente centrado en TODA la cabecera.
+   
+   PARA UN CENTRADO MÁS "REAL":
+   Necesitamos que el h1 esté centrado en el CONTENEDOR FLEX.
+   Si hay 3 elementos: [espaciador] [H1] [botón]
+   O que el h1 tenga `margin: 0 auto;` y el botón `margin-left: auto;`.
+   
+   Vamos a usar la técnica de 'margin-left: auto' para el botón y 'margin: 0 auto' para el h1.
+   Para que 'margin: 0 auto' funcione bien en un elemento flex, debe ser el ÚNICO elemento que tiene esa propiedad
+   o los otros deben tener un ancho fijo o estar empujados con auto margins.
+*/
+
+/* --- ESTILOS PARA LA CABECERA (Botón y Título) - VERSIÓN MEJORADA --- */
+/* Esta es la parte que cambia para asegurar la ubicación correcta sin romper el estilo */
+.header-content {
+    display: flex;
+    /* NO usar justify-content: space-between si queremos el h1 centrado "globalmente" */
+    align-items: center;
+    width: 100%;
+    margin-bottom: 30px;
+    padding: 10px 0;
+}
+
+.header-content h1 {
+    /* Esto lo centrará si es el único elemento que no tiene 'margin-left: auto' o 'margin-right: auto' */
+    margin: 0 auto; /* Esto es clave para centrarlo dentro del flex container */
+    flex-grow: 1; /* Permite que ocupe espacio, pero margin auto lo centrará */
+    text-align: center; /* Centra el texto dentro del h1 */
+
+    /* Tus estilos de h1 existentes */
+    color: #3f51b5; 
+    font-size: 2.8em; 
+    font-weight: 700; 
+    letter-spacing: 0.8px; 
+    text-transform: uppercase;
+    text-shadow: none; 
+    background: none; 
+    -webkit-background-clip: unset; 
+    -webkit-text-fill-color: inherit; 
+    animation: none; 
+}
+
+.dashboard-button {
+    margin-left: auto; /* Empuja el botón a la derecha */
+    flex-shrink: 0; /* Evita que el botón se encoja */
+
+    /* Tus estilos de botón existentes */
+    background-color: #607d8b; 
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.dashboard-button:hover {
+    background-color: #455a64; 
+    transform: translateY(-2px); 
+}
+/* --- FIN ESTILOS PARA LA CABECERA - VERSIÓN MEJORADA --- */
+
+h1 { /* Esta regla es para h1s fuera del .header-content */
+    color: #3f51b5; 
     text-align: center;
     margin-bottom: 45px;
-    font-size: 3.2em; /* Título grande y llamativo */
-    font-weight: 900; /* Extra-negrita */
-    letter-spacing: 1.5px;
-    text-transform: uppercase; /* Todo en mayúsculas */
-    text-shadow: 3px 3px 6px rgba(0,0,0,0.1); /* Sombra más marcada en el texto */
-    background: linear-gradient(45deg, #ff6b6b, #ffe66b); /* Degradado en el texto */
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: pulse 1.5s infinite alternate; /* Animación de pulsación sutil */
+    font-size: 2.8em; 
+    font-weight: 700; 
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    text-shadow: none; 
+    background: none; 
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: inherit;
+    animation: none; 
 }
 
-/* Animación para el título */
-@keyframes pulse {
-    from {
-        transform: scale(1);
-    }
-    to {
-        transform: scale(1.02);
-    }
-}
 
 .pedidos-list {
-    display: grid; /* Habilita CSS Grid para la disposición de las tarjetas */
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Mantenemos tu valor 280px para asegurar horizontalidad */
-    gap: 25px; /* Espacio generoso entre tarjetas (ajustado de 20px) */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
     padding: 0;
     margin: 0;
-    justify-content: center; /* Centra las tarjetas si la última fila no está llena */
-    align-items: stretch; /* Asegura que las tarjetas tengan la misma altura */
+    justify-content: center;
+    align-items: stretch;
 }
 
 .pedido-card {
-    background-color: #ffffff; /* Fondo blanco puro para la tarjeta */
-    border: none; /* Quitamos el borde para un look más limpio */
-    border-radius: 15px; /* Bordes bien redondeados */
-    padding: 25px; /* Más padding interno en las tarjetas */
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); /* Sombra más definida */
-    display: flex; /* Habilita Flexbox dentro de cada tarjeta */
-    flex-direction: column; /* Organiza los elementos de la tarjeta en una columna */
-    justify-content: space-between; /* Empuja el primer elemento (título) arriba y el último (botón) abajo */
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Transición suave para hover */
-    border-top: 5px solid #20e3b2; /* Acento de color superior vibrante */
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0; 
+    border-radius: 10px; 
+    padding: 20px; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; 
+    border-top: 4px solid #607d8b; 
 }
 
 .pedido-card:hover {
-    transform: translateY(-10px); /* Efecto de "flotar" más pronunciado */
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25); /* Sombra intensa al pasar el mouse */
+    transform: translateY(-5px); 
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); 
 }
 
 .pedido-card h3 {
     margin-top: 0;
-    color: #007bff; /* Azul brillante para los títulos de pedido */
-    font-size: 1.6em;
-    border-bottom: 2px solid #e0f2f7; /* Línea divisoria suave */
-    padding-bottom: 15px;
-    margin-bottom: 15px;
-    font-weight: 700;
+    color: #3f51b5; 
+    font-size: 1.5em; 
+    border-bottom: 1px solid #e8e8e8; 
+    padding-bottom: 10px; 
+    margin-bottom: 10px; 
+    font-weight: 600; 
     word-wrap: break-word;
 }
 
 .pedido-card p {
-    margin: 10px 0; /* Más espacio vertical para los párrafos */
-    color: #444;
-    font-size: 1.05em;
-    line-height: 1.6; /* Más espacio entre líneas */
+    margin: 8px 0; 
+    color: #555; 
+    font-size: 1em; 
+    line-height: 1.5; 
     word-wrap: break-word;
 }
 
 .pedido-card p strong {
-    color: #222;
+    color: #333;
     font-weight: 600;
 }
 
-/* Estilos específicos para los spans de "Estado" y "Total" */
 .pedido-card p span {
-    font-weight: 700; /* Texto más audaz por defecto */
-    display: inline-block; /* Para aplicar padding y margin correctamente */
-    padding: 4px 10px;
-    border-radius: 6px;
-    margin-left: 5px; /* Un pequeño margen para separar del texto anterior */
+    font-weight: 600; 
+    display: inline-block;
+    padding: 3px 8px; 
+    border-radius: 4px; 
+    margin-left: 5px;
 }
 
-/* Color para el texto de estado 'LISTO' que viene con estilo inline="color: blue;" */
-.pedido-card p span[style*="blue"] {
-    background-color: #c8e6c9; /* Fondo verde claro */
-    color: #28a745 !important; /* Verde vibrante */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+.pedido-card p span[style*="blue"] { /* Para el estado 'LISTO' */
+    background-color: #dcedc8; 
+    color: #689f38 !important; 
+    box-shadow: none; 
 }
 
-/* Color para el texto del 'Total' que viene con estilo inline="color: green;" */
-.pedido-card p span[style*="green"] {
-    background-color: #ffccbc; /* Fondo naranja claro */
-    color: #ff5722 !important; /* Naranja rojizo vibrante */
-    font-size: 1.3em;
-    padding: 5px 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+.pedido-card p span[style*="green"] { /* Para el 'Total' */
+    background-color: #bbdefb; 
+    color: #2196f3 !important; 
+    font-size: 1.2em; 
+    padding: 4px 10px; 
+    box-shadow: none; 
 }
 
 .pedido-card .items-list {
     list-style: none;
     padding: 0;
-    margin: 20px 0;
-    border-top: 1px solid #c5e1a5; /* Borde superior sólido verde */
-    padding-top: 15px;
-    max-height: 160px; /* Altura máxima para la lista de ítems */
-    overflow-y: auto; /* Añade scroll si el contenido de la lista excede max-height */
+    margin: 15px 0; 
+    border-top: 1px solid #e0e0e0; 
+    padding-top: 10px; 
+    max-height: 150px; 
+    overflow-y: auto;
     word-wrap: break-word;
-    background-color: #f1f8e9; /* Fondo verde muy claro para la lista */
-    border-radius: 8px;
-    padding: 10px 15px;
-    box-shadow: inset 0 1px 4px rgba(0,0,0,0.05); /* Sombra interna sutil */
+    background-color: #f8f8f8; 
+    border-radius: 6px; 
+    padding: 8px 12px; 
+    box-shadow: none; 
 }
 
 .pedido-card .items-list li {
-    background-color: #e8f5e9; /* Fondo más claro para cada ítem de lista */
-    margin-bottom: 8px;
-    padding: 10px 15px;
-    border-radius: 8px; /* Bordes más redondeados */
-    font-size: 0.95em;
-    color: #4CAF50; /* Texto verde para los ítems */
-    border: 1px solid #c8e6c9; /* Borde verde suave */
+    background-color: #f2f2f2; 
+    margin-bottom: 6px; 
+    padding: 8px 12px; 
+    border-radius: 6px;
+    font-size: 0.9em;
+    color: #444; 
+    border: 1px solid #e0e0e0; 
     word-wrap: break-word;
-    font-weight: 600;
+    font-weight: 500; 
 }
 
 .pedido-card button {
-    background: linear-gradient(45deg, #4CAF50, #8bc34a); /* Degradado verde vibrante */
+    background: linear-gradient(45deg, #4caf50, #81c784); 
     color: white;
     border: none;
-    padding: 16px 28px; /* Botón más grande */
-    border-radius: 10px; /* Bordes muy redondeados */
+    padding: 14px 25px; 
+    border-radius: 8px; 
     cursor: pointer;
-    font-size: 1.25em; /* Texto del botón más grande */
-    font-weight: bold;
-    margin-top: 30px;
-    width: 100%; /* El botón ocupa todo el ancho de la tarjeta */
-    margin-top: auto; /* Empuja el botón al final del flex container */
-    flex-shrink: 0; /* Asegura que el botón no se encoja */
-    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Sombra para el botón */
+    font-size: 1.1em; 
+    font-weight: 600; 
+    margin-top: 25px; 
+    width: 100%;
+    margin-top: auto;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
 }
 
 .pedido-card button:hover {
-    background: linear-gradient(45deg, #66bb6a, #9ccc65); /* Degradado más claro en hover */
-    transform: translateY(-5px); /* Efecto de "levantar" al pasar el mouse */
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25); /* Sombra más fuerte en hover */
+    background: linear-gradient(45deg, #66bb6a, #9ccc65); 
+    transform: translateY(-3px); 
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15); 
 }
 
 .pedido-card button:active {
-    transform: translateY(0); /* Efecto de "presionar" */
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+    transform: translateY(0);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .no-pedidos {
     text-align: center;
-    color: #a0a0a0;
-    padding: 50px;
-    grid-column: 1 / -1; /* Hace que el mensaje ocupe todas las columnas del grid */
+    color: #888; 
+    padding: 40px; 
+    grid-column: 1 / -1;
     font-style: italic;
-    font-size: 1.2em;
-    background-color: #f0f0f0;
-    border-radius: 10px;
-    margin: 20px 0;
+    font-size: 1.1em; 
+    background-color: #f5f5f5; 
+    border-radius: 8px; 
+    margin: 15px 0; 
 }
 
-/* Media Queries para Responsividad */
+/* Media Queries (Mantienen la responsividad) */
 @media (max-width: 992px) {
     .container {
         max-width: 90%;
         padding: 30px;
     }
-    h1 {
-        font-size: 2.8em;
+    h1 { /* El h1 global y el de la cabecera se ajustan */
+        font-size: 2.5em;
     }
     .pedidos-list {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Mantener horizontalidad */
-        gap: 25px;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
     }
 }
 
+/* Ajustes específicos para móviles */
 @media (max-width: 768px) {
-    h1 {
-        font-size: 2.2em;
-        margin-bottom: 35px;
+    .header-content {
+        flex-direction: column; /* Apila los elementos en columna */
+        align-items: center; /* Centra los elementos apilados */
+        gap: 15px; /* Espacio entre el botón y el h1 */
     }
+
+    .header-content h1 {
+        /* Vuelve a comportarse como un bloque normal en móviles, centrado */
+        position: static; 
+        transform: none; 
+        text-align: center; 
+        width: auto; 
+        order: 2; /* Coloca el h1 después del botón en el orden del flexbox */
+        font-size: 2em; 
+        margin-bottom: 0; 
+    }
+
+    .dashboard-button {
+        margin-left: 0; /* Desactiva el auto-margin */
+        margin-right: 0; /* Desactiva el auto-margin */
+        order: 1; /* Coloca el botón primero en el orden del flexbox */
+        width: 100%; /* Ocupa todo el ancho en móvil */
+        text-align: center; /* Centra el texto del botón */
+    }
+
     .pedido-card {
-        padding: 20px;
+        padding: 18px;
     }
     .pedido-card h3 {
-        font-size: 1.4em;
+        font-size: 1.3em;
     }
 }
 
 @media (max-width: 576px) {
     .container {
         margin: 20px 10px;
-        padding: 25px;
-    }
-    h1 {
-        font-size: 1.8em;
-        margin-bottom: 25px;
-    }
-    .pedidos-list {
-        grid-template-columns: 1fr; /* Una sola columna en móviles */
-        gap: 20px;
-    }
-    .pedido-card {
         padding: 20px;
     }
-    .pedido-card button {
-        padding: 14px 20px;
-        font-size: 1.1em;
+    .header-content h1 { 
+        font-size: 1.6em;
     }
+    .pedidos-list {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    .pedido-card {
+        padding: 18px;
+    }
+    .pedido-card button {
+        padding: 12px 18px;
+        font-size: 1em;
+    }
+}
+
+/* Selector de método de pago */
+.payment-method-selector {
+    margin-top: 15px;
+    margin-bottom: 15px; 
+    display: flex;
+    flex-direction: column;
+    gap: 8px; 
+}
+
+.payment-method-selector label {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.95em;
+}
+
+.payment-method-select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    color: #333;
+    background-color: #f8f8f8;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13%205.4L146.2%20205.9%2018.3%2075.8c-7.8-7.8-20.5-7.8-28.3%200s-7.8%2020.5%200%2028.3l130.4%20130.4c4.6%204.6%2010.8%207%2017%207s12.4-2.4%2017-7l130.4-130.4c7.8-7.8%207.8-20.5%200-28.3-7.7-7.8-20.5-7.8-28.3%200z%22%2F%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+}
+
+.payment-method-select:focus {
+    outline: none;
+    border-color: #607d8b;
+    box-shadow: 0 0 0 2px rgba(96, 125, 139, 0.2);
 }
