@@ -9,6 +9,7 @@ export function setupEmpleadoController(containerElement) {
     3: 'Cocinero'
   };
 
+
   const form = containerElement.querySelector('#empleadoForm');
   const tableBody = containerElement.querySelector('#empleadosTable tbody');
 

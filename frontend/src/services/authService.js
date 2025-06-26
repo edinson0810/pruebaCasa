@@ -10,6 +10,7 @@ export async function registerUser(nombre, email, password, rolId) {
         body: JSON.stringify({ nombre, email, password, rolId })
     });
     const data = await response.json();
+    
     if (!response.ok) {
         throw new Error(data.message || 'Error desconocido al registrar.');
     }
