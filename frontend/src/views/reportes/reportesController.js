@@ -1,8 +1,6 @@
 
 // src/views/reportes/reportesController.js
-// src/views/reportes/reportesController.js
-// src/views/reportes/reportesController.js
-// src/views/reportes/reportesController.js
+
 
 // Base URL para tu backend API. ¡AJUSTA ESTO A TU URL REAL DEL BACKEND!
 const API_BASE_URL = 'http://localhost:3000/api'; 
@@ -16,7 +14,7 @@ export function setupReporteController(containerElement, onBackToDashboard) { //
     const endDateInput = containerElement.querySelector('#end-date');
     const generateReportBtn = containerElement.querySelector('#generate-report-btn');
     const reportOutput = containerElement.querySelector('#report-output');
-    const backToDashboardBtn = containerElement.querySelector('#back-to-pagos-btn'); // El ID en el HTML es back-to-pagos-btn
+   const volverDashboardBtn = document.getElementById('volverDashboardBtn');; // El ID en el HTML es back-to-pagos-btn
 
     // Assign current date by default to date fields
     const today = new Date();
@@ -29,14 +27,9 @@ export function setupReporteController(containerElement, onBackToDashboard) { //
     endDateInput.value = `${year}-${mm}-${dd}`;
 
     // Event Listener for the "Volver al Dashboard" button
-    if (backToDashboardBtn) {
-        backToDashboardBtn.addEventListener('click', () => {
-            console.log("Botón 'Volver al Dashboard' clickeado en ReportesController. Llamando al callback.");
-            if (typeof onBackToDashboard === 'function') {
-                onBackToDashboard(); // Llama a la función provista por main.js
-            } else {
-                console.error("Callback onBackToDashboard no provisto o no es una función.");
-            }
+    if (volverDashboardBtn) {
+        volverDashboardBtn.addEventListener('click', () => {
+         window.router.navigate('/dashboard'); // Esto forzará una recarga completa y navegación a esa URL
         });
     }
 
